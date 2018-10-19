@@ -109,3 +109,10 @@
     margin-top: 16px !important;
   }
 </style>
+
+<style lang="scss">
+  a:hover,
+  a.hover {
+    text-decoration: none !important;
+  }
+</style>
