@@ -29,8 +29,6 @@
 </template>
 
 <script>
-  import moment from 'moment'
-
   export default {
     name: 'History',
     async fetch ({ app, store }) {
@@ -43,9 +41,6 @@
       trainings: null,
       dates: []
     }),
-    created () {
-      moment.locale('ru')
-    },
     mounted () {
       this.trainings = this.$store.getters.getTrainingsHistory
       this.getTrainingMonths()
@@ -54,7 +49,7 @@
       getFormattedMonths () {
         return this.dates.map(item => {
           return {
-            month: moment().month(+item.month - 1).format('MMMM'),
+            month: this.$moment().month(+item.month - 1).format('MMMM'),
             year: item.year
           }
         })
@@ -70,7 +65,7 @@
         })
       },
       formatMonth (month) {
-        return moment().month(month).format('MM')
+        return this.$moment().month(month).format('MM')
       }
     }
   }

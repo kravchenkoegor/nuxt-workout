@@ -33,6 +33,12 @@ module.exports = {
     '@nuxtjs/vuetify',
     'nuxt-sass-resources-loader'
   ],
+  plugins: [
+    {
+      src: '~/plugins/moment.js',
+      ssr: false
+    }
+  ],
   sassResources: [
     '@/assets/scss/_variables.scss'
   ],

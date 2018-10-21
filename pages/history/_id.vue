@@ -28,8 +28,6 @@
 </template>
 
 <script>
-  import moment from 'moment'
-
   export default {
     name: 'HistoryByMonth',
     async fetch ({ app, store, params }) {
@@ -52,13 +50,13 @@
         }
       },
       capitalizeFirstLetter (string) {
-        return string.charAt(0).toUpperCase() + string.slice(1)
+        if (typeof string === 'string') return string.charAt(0).toUpperCase() + string.slice(1)
       }
     },
     computed: {
       getFormattedDate () {
         const [year, month] = this.$route.params.id.split('-')
-        return `${this.capitalizeFirstLetter(moment().month(+month - 1).format('MMMM'))} ${year}`
+        return `${this.capitalizeFirstLetter(this.$moment().month(+month - 1).format('MMMM'))} ${year}`
       }
     }
   }

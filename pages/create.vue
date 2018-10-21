@@ -195,8 +195,6 @@
 </template>
 
 <script>
-  import moment from 'moment'
-
   export default {
     name: 'Create',
     data: () => ({
@@ -222,7 +220,6 @@
       }
     }),
     created () {
-      moment.locale('ru')
       this.training = this.$store.getters.getTraining
     },
     methods: {
@@ -297,11 +294,11 @@
       },
       formatDate (date) {
         if (!date) return null
-        return moment(date).format('D MMMM YYYY')
+        return this.$moment(date).format('D MMMM YYYY')
       },
       formatDateShort (date) {
         if (!date) return null
-        return moment(date).format('D MMMM')
+        return this.$moment(date).format('D MMMM')
       }
     },
     computed: {
