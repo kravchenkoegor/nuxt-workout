@@ -8,33 +8,20 @@
 
         <div class="col-12 my-4">
           <nuxt-link
-            v-for="(training, index) in trainings"
+            v-for="(item, index) in getFormattedMonths"
             :key="index"
-            :to="{ name: 'training-id', params: { id: training._id } }"
+            :to="{ name: 'history-id', params: { id: `${item.year}-${formatMonth(item.month)}` } }"
             class="history__item shadow"
           >
-            <div class="history__item-date">{{ training.date }}</div>
-            <div class="history__item-time">{{ training.startTime }} <span>&mdash;</span> {{ training.endTime }}</div>
+            <div class="history__item-date">{{ item.month }} {{ item.year }}</div>
             <i class="fas fa-check-circle"></i>
           </nuxt-link>
         </div>
 
-        <!--<div class="col-12 my-4">-->
-          <!--<nuxt-link-->
-            <!--v-for="(month, index) in getFormattedMonths"-->
-            <!--:key="index"-->
-            <!--:to="{ name: 'history-id', params: { id: month.substr() } }"-->
-            <!--class="history__item shadow"-->
-          <!--&gt;-->
-            <!--<div class="history__item-date">{{ month }}</div>-->
-            <!--<i class="fas fa-check-circle"></i>-->
-          <!--</nuxt-link>-->
-        <!--</div>-->
-
         <div class="col-12">
-          <router-link class="history__btn btn btn-success" :to="'/'">
+          <nuxt-link class="history__btn btn btn-success" :to="'/'">
             <i class="fas fa-undo-alt"></i>&nbsp;&nbsp;На главную
-          </router-link>
+          </nuxt-link>
         </div>
       </div>
     </div>
@@ -54,34 +41,42 @@
     },
     data: () => ({
       trainings: null,
-      months: []
+      dates: []
     }),
     created () {
       moment.locale('ru')
     },
     mounted () {
       this.trainings = this.$store.getters.getTrainingsHistory
-      // this.getTrainingMonths()
+      this.getTrainingMonths()
     },
     computed: {
-      // getFormattedMonths () {
-      //   return this.months.map(item => `${moment().month(item.substr(0, 2)).format('MMMM')} ${item.substr(3)}`)
-      // }
+      getFormattedMonths () {
+        return this.dates.map(item => {
+          return {
+            month: moment().month(+item.month - 1).format('MMMM'),
+            year: item.year
+          }
+        })
+      }
     },
     methods: {
       getTrainingMonths () {
-        this.trainings.forEach(item => {
-          const date = moment(item.date).startOf('month').format('MM/YYYY')
-          if (!this.months.includes(date)) {
-            this.months.push(date)
+        this.trainings.forEach(training => {
+          const { month, year } = training
+          if (!this.dates.some(el => el.month === month && el.year === year)) {
+            this.dates.push({ month, year })
           }
         })
+      },
+      formatMonth (month) {
+        return moment().month(month).format('MM')
       }
     }
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
   .container {
     padding-top: 20px;
     padding-bottom: 20px;

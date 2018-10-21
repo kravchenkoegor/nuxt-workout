@@ -27,13 +27,15 @@
             ></v-text-field>
             <v-date-picker
                 v-model="date"
+                :color="'#18ba60'"
                 scrollable
                 :first-day-of-week="'1'"
                 :locale="'ru-ru'"
+                :title-date-format="value => formatDateShort(value)"
             >
               <v-spacer></v-spacer>
-              <v-btn flat color="primary" @click="datepicker = false">Отмена</v-btn>
-              <v-btn flat color="primary" @click="$refs.dialog.save(date)">OK</v-btn>
+              <v-btn flat :color="'rgba(0,0,0,.87)'" @click="datepicker = false">Отмена</v-btn>
+              <v-btn flat :color="'#18ba60'" @click="$refs.dialog.save(date)">OK</v-btn>
             </v-date-picker>
           </v-dialog>
         </div>
@@ -193,6 +195,8 @@
 </template>
 
 <script>
+  import moment from 'moment'
+
   export default {
     name: 'Create',
     data: () => ({
@@ -217,6 +221,10 @@
         sets: []
       }
     }),
+    created () {
+      moment.locale('ru')
+      this.training = this.$store.getters.getTraining
+    },
     methods: {
       save () {
         if (this.weight && this.repeats) {
@@ -248,7 +256,7 @@
           .catch(error => console.log(error))
       },
       addSet (weight, repeats) {
-        const set = {weight, repeats}
+        const set = { weight, repeats }
         this.addExercise.sets.push({ weight, repeats })
         this.repeats = null
         this.$store.dispatch('addSet', set)
@@ -270,7 +278,11 @@
       },
       async saveTraining () {
         try {
+          const [year, month, day] = this.date.split('-')
           const result = await this.$axios.post('/create', {
+            day,
+            month,
+            year,
             date: this.date,
             startTime: `${this.startHH}:${this.startMM}`,
             endTime: `${this.endHH}:${this.endMM}`,
@@ -285,11 +297,11 @@
       },
       formatDate (date) {
         if (!date) return null
-
-        const [year, month, day] = date.split('-')
-        const MMMM = new Date(`${month}/${day}/${year}`).toLocaleString('ru-RU', { month: 'long' })
-
-        return `${day} ${MMMM.replace('ь', 'я')} ${year}`
+        return moment(date).format('D MMMM YYYY')
+      },
+      formatDateShort (date) {
+        if (!date) return null
+        return moment(date).format('D MMMM')
       }
     },
     computed: {
@@ -303,9 +315,6 @@
       computedDateFormatted () {
         return this.formatDate(this.date)
       }
-    },
-    mounted () {
-      this.training = this.$store.getters.getTraining
     }
   }
 </script>
@@ -395,6 +404,10 @@
       }
     }
 
+    .v-date-picker-title__year {
+      font-size: 16px;
+    }
+
     .exercise {
       &__sets {
         display: flex;
@@ -436,5 +449,10 @@
     width: 100%;
     margin: 0 auto;
     text-transform: uppercase;
+  }
+
+  button:focus,
+  button.focus {
+    outline: none !important;
   }
 </style>

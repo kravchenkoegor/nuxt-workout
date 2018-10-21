@@ -1,10 +1,21 @@
-const Training = require('../models/post.model')
+const Training = require('../models/training.model')
 
 module.exports = {
   async index (req, res) {
     try {
       const trainings = await Training.find({})
       res.send(trainings)
+    } catch (error) {
+      res.status(400).send({
+        error: `An error has occured ${error}`
+      })
+    }
+  },
+  async showByDate (req, res) {
+    try {
+      const [year, month] = req.params.id.split('-')
+      const training = await Training.find({ year, month })
+      res.send(training)
     } catch (error) {
       res.status(400).send({
         error: `An error has occured ${error}`

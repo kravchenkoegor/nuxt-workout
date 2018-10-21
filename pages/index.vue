@@ -115,4 +115,8 @@
   a.hover {
     text-decoration: none !important;
   }
+
+  * {
+    outline: none !important;
+  }
 </style>

@@ -2,43 +2,47 @@
   <div class="container">
     <div class="row">
       <div class="col-12">
-        {{ $route.params.id }}
+        <h2 class="mb-0">{{ getFormattedDate }}</h2>
+      </div>
 
-        <div class="col-12 px-0 d-flex text-center">
-          <button class="btn btn-success" type="button" @click="$router.push({ name: 'history' })">
-            <i class="fas fa-arrow-left"></i>&nbsp;Назад
-          </button>
+      <div class="col-12 my-4">
+        <nuxt-link
+          v-for="(training, index) in trainings"
+          :key="index"
+          :to="{ name: 'training-id', params: { id: training._id } }"
+          class="history__item shadow"
+        >
+          <div class="history__item-date">{{ training.date }}</div>
+          <div class="history__item-time">{{ training.startTime }} <span>&mdash;</span> {{ training.endTime }}</div>
+          <i class="fas fa-check-circle"></i>
+        </nuxt-link>
+      </div>
 
-          <button class="btn btn-danger" type="button" @click="deleteTraining">
-            <i class="fas fa-trash-alt"></i>&nbsp;Удалить
-          </button>
-        </div>
+      <div class="col-12">
+        <nuxt-link class="history__btn btn btn-success" :to="'history'">
+          <i class="fas fa-undo-alt"></i>&nbsp;&nbsp;Назад
+        </nuxt-link>
       </div>
     </div>
   </div>
-
-
-
 </template>
 
 <script>
+  import moment from 'moment'
+
   export default {
-    name: 'Training',
+    name: 'HistoryByMonth',
+    async fetch ({ app, store, params }) {
+      let trainings = await app.$axios.$get('/history/' + params.id)
+      if (trainings) {
+        store.dispatch('setTrainingsHistory', trainings)
+      }
+    },
     data: () => ({
-      training: null
+      trainings: null
     }),
     created () {
-      this.training = this.$store.getters.getTrainingDetails
-    },
-    async fetch ({ app, store, params }) {
-      try {
-        let result = await app.$axios.$get('/training/' + params.id)
-        if (result) {
-          store.dispatch('setTrainingDetails', result)
-        }
-      } catch (error) {
-        console.log(error)
-      }
+      this.trainings = this.$store.getters.getTrainingsHistory
     },
     methods: {
       async deleteTraining () {
@@ -46,6 +50,15 @@
         if (result) {
           this.$router.push({ name: 'history' })
         }
+      },
+      capitalizeFirstLetter (string) {
+        return string.charAt(0).toUpperCase() + string.slice(1)
+      }
+    },
+    computed: {
+      getFormattedDate () {
+        const [year, month] = this.$route.params.id.split('-')
+        return `${this.capitalizeFirstLetter(moment().month(+month - 1).format('MMMM'))} ${year}`
       }
     }
   }

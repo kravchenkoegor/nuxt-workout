@@ -24,7 +24,7 @@ database.connect()
 // console.log(`Server is listening on port ${process.env.PORT || 3000}`)
 
 // Ping
-setInterval(() => https.get(process.env.BASE_URL), 900000)
+// setInterval(() => https.get(process.env.BASE_URL), 900000)
 
 module.exports = {
   path: '/api/',

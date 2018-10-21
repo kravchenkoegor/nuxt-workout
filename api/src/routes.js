@@ -12,6 +12,10 @@ module.exports = (router) => {
     TrainingController.index(req, res)
   })
 
+  router.get('/history/:id', (req, res) => {
+    TrainingController.showByDate(req, res)
+  })
+
   router.post('/create', (req, res) => {
     TrainingController.create(req, res)
   })

@@ -4,52 +4,52 @@ importScripts('/_nuxt/workbox.5c678697.js')
 
 workbox.precaching.precacheAndRoute([
   {
+    "url": "/_nuxt/0618290a4dace1f83797.js",
+    "revision": "f3c9bf9c16b1a8b5edcc8ccf560c7e87"
+  },
+  {
+    "url": "/_nuxt/0f1112bcd900b4878573.js",
+    "revision": "97bdbf79bf16e5b8f9584857284e6e54"
+  },
+  {
+    "url": "/_nuxt/268634f4caee50423513.js",
+    "revision": "251d37585ea6d22a3b9560b148b354a6"
+  },
+  {
+    "url": "/_nuxt/2935d8b2658a85b4a737.js",
+    "revision": "9367e72a2195a138ee6bc4211da799f0"
+  },
+  {
     "url": "/_nuxt/33dee65157248c065df7.js",
     "revision": "ece72330c1b54be00cbf8fe8a3481aa4"
   },
   {
-    "url": "/_nuxt/4e61fbd7d4f3f5e88d96.js",
-    "revision": "04af2673a03e2dbd40e58cc8a39e9a83"
+    "url": "/_nuxt/3daa47924ff4a820d268.js",
+    "revision": "f271ff82051d10ab1f1137cef5c11f4b"
   },
   {
-    "url": "/_nuxt/5649a8a9415843a21739.js",
-    "revision": "75c70cf7f3eed1f78903e214361cefcb"
+    "url": "/_nuxt/4e5da29a51cdd4cbe293.js",
+    "revision": "421472aa2349ffd1c60c0a538c136400"
   },
   {
-    "url": "/_nuxt/6893312a527a75c1c31e.js",
-    "revision": "1825966631d927aa77618a20546caf0d"
+    "url": "/_nuxt/9b55edc40abb43d9cf9c.js",
+    "revision": "5253e3e7647c9077e1ba83b2e2c49d47"
   },
   {
-    "url": "/_nuxt/6a5dafe334ea48c85478.js",
-    "revision": "e170f032cdeb223257e501ce71614f7a"
+    "url": "/_nuxt/9d33ff7a528d9fd89d6a.js",
+    "revision": "aacb8057f95e8fced7286025498291d5"
   },
   {
-    "url": "/_nuxt/850272d110d0a816fc56.js",
-    "revision": "bb904c914bcb97486b31f4d126be3760"
+    "url": "/_nuxt/d2b8eb93b4f114840043.js",
+    "revision": "c4821913b837decefc7b02591e16b797"
   },
   {
-    "url": "/_nuxt/9ed2ca233770458f4fac.js",
-    "revision": "b5de87065dbb9248cacc8f24f5a7d091"
+    "url": "/_nuxt/d9acdbd1ebfe38de504a.js",
+    "revision": "58a16b0307f21b8ecbec2ba7c8e4d2ae"
   },
   {
-    "url": "/_nuxt/c1b7fd05bc1b51ff29a9.js",
-    "revision": "495dc375913cb3f6ad258630983eadc6"
-  },
-  {
-    "url": "/_nuxt/e0aa2829b2443f993208.js",
-    "revision": "4cadee285c086d7c08892fe325771fae"
-  },
-  {
-    "url": "/_nuxt/f1098f87cb3af9ecfb55.js",
-    "revision": "e0a376a632276353d497e812d3a7f7df"
-  },
-  {
-    "url": "/_nuxt/f895ff776a35dccc45e7.js",
-    "revision": "c5704985099ed4121a9a3bbc66124e69"
-  },
-  {
-    "url": "/_nuxt/feb28d88a83508aeef70.js",
-    "revision": "81523f1125efd4b737548b71f35ac903"
+    "url": "/_nuxt/de98614234946c7dc5d5.js",
+    "revision": "48fdec4b777b902f5233ade1b1c5ecf2"
   }
 ], {
   "cacheId": "workout",
