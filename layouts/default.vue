@@ -53,15 +53,17 @@
     computed: {
       ...mapGetters(['user']),
       menuLinks() {
-        const links = [
-          {text: 'Войти', icon: 'fas fa-sign-out-alt', link: '/login'}
-        ];
+        const links = [];
 
         if (this.user) {
           links.push(
             {text: 'Добавить тренировку', icon: 'fas fa-edit', link: '/add'},
             {text: 'Журнал тренировок', icon: 'fas fa-list-ul', link: '/history'}
-          )
+          );
+        } else {
+          links.push(
+            {text: 'Войти', icon: 'fas fa-sign-out-alt', link: '/login'}
+          );
         }
 
         return links;

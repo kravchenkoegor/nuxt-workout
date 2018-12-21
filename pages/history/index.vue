@@ -36,7 +36,7 @@
           <v-layout row justify-center align-center class="history__empty">
             <v-flex xs12 text-xs-center>
               <p>У Вас еще нет тренировок.</p>
-              <v-btn color="primary" nuxt to="/create" exact>
+              <v-btn color="primary" nuxt to="/add" exact>
                 <v-icon left small>fas fa-plus-circle</v-icon>
                 Добавить
               </v-btn>
