@@ -5,7 +5,7 @@ module.exports = {
     baseUrl: process.env.BASE_URL || 'http://localhost:3000'
   },
   head: {
-    title: 'vue-workout',
+    title: 'Nuxt.js Workout',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -33,15 +33,18 @@ module.exports = {
     '@nuxtjs/vuetify',
     'nuxt-sass-resources-loader'
   ],
-  plugins: [
-    {
-      src: '~/plugins/moment.js',
-      ssr: false
+  vuetify: {
+    iconfont: 'fa',
+    theme: {
+      primary: '#125E8A',
+      secondary: '#48A9A6'
+      //secondary: '#197BBD'
     }
+  },
+  plugins: [
+    {src: '~/plugins/moment.js', ssr: false}
   ],
-  sassResources: [
-    '@/assets/scss/_variables.scss'
-  ],
+  sassResources: ['@/assets/scss/_variables.scss'],
   axios: {
     baseURL: '/api'
   }

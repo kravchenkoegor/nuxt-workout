@@ -1,4 +1,9 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+
+const {ObjectId} = mongoose.Types;
+ObjectId.prototype.valueOf = function() {
+  return this.toString()
+}
 
 const trainingSchema = new mongoose.Schema({
   day: {
@@ -21,7 +26,12 @@ const trainingSchema = new mongoose.Schema({
   },
   exercises: {
     type: Array
-  }
+  },
+  createdBy: {
+    type: ObjectId,
+    // required: true,
+    ref: 'User'
+  },
 })
 
 /* eslint-disable no-undef */

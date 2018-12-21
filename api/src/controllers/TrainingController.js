@@ -1,30 +1,27 @@
 const Training = require('../models/training.model')
 
 module.exports = {
-  async index (req, res) {
+  async getUserTrainings(req, res) {
     try {
-      const trainings = await Training.find({})
+      const trainings = await Training.find({createdBy: req.body.userId});
+      if (!trainings) res.status(400).send({error: 'Тренировок не найдено'});
       res.send(trainings)
     } catch (error) {
-      res.status(400).send({
-        error: `An error has occured ${error}`
-      })
+      res.status(400).send({error: `An error has occured ${error}`})
     }
   },
-  async showByDate (req, res) {
+  async getUserTrainingsByDate (req, res) {
     try {
       const [year, month] = req.params.id.split('-')
       const training = await Training.find({ year, month })
       res.send(training)
     } catch (error) {
-      res.status(400).send({
-        error: `An error has occured ${error}`
-      })
+      res.status(400).send({error: `An error has occured ${error}`})
     }
   },
   async create (req, res) {
     try {
-      // req.body.date = moment(req.body.date).format('D MMMM YYYY')
+      console.log(req.body)
       const post = await new Training(req.body).save()
       res.json(post)
     } catch (error) {

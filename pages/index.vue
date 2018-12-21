@@ -1,122 +1,58 @@
 <template>
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <nuxt-link to="weight">
-          <div class="card shadow">
-            <img class="card-img-top" src="/images/weight-chart.jpg" alt="weight chart">
-            <div class="card-body">
-              <h5 class="card-title">График веса</h5>
-            </div>
-          </div>
+  <v-container v-if="user">
+    <v-layout row wrap>
+      <v-flex
+        v-for="(card, index) in cards"
+        :key="index"
+        xs12
+      >
+        <nuxt-link :to="card.link">
+          <v-card
+            :class="{'mb-3': index !== cards.length - 1}"
+            class="card elevation-4"
+          >
+            <v-responsive>
+              <img class="card__image" :src="card.image" alt="">
+            </v-responsive>
+
+            <v-card-title class="card__title text-uppercase">
+              {{card.title}}
+            </v-card-title>
+          </v-card>
         </nuxt-link>
-      </div>
-
-      <div class="col-12 mt-3">
-        <nuxt-link to="history">
-          <div class="card shadow">
-            <img class="card-img-top" src="/images/history.jpg" alt="workout history">
-            <div class="card-body">
-              <h5 class="card-title">Журнал тренировок</h5>
-            </div>
-          </div>
-        </nuxt-link>
-      </div>
-
-      <div class="col-12 mt-3">
-        <nuxt-link to="create">
-          <div class="card shadow">
-            <img class="card-img-top" src="/images/create.jpg" alt="workout history">
-            <div class="card-body">
-              <h5 class="card-title">Добавить тренировку</h5>
-            </div>
-          </div>
-        </nuxt-link>
-      </div>
-
-      <!--<div class="col-12">-->
-        <!--<div class="train train_last shadow">-->
-          <!--Последняя тренировка-->
-        <!--</div>-->
-
-    </div>
-  </div>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
+  import {mapGetters} from 'vuex';
+
   export default {
-    name: 'home'
-  }
-</script>
+    name: 'Home',
+    data: () => ({
+      cards: [
+        // {title: 'График веса', image: '/images/weight-chart.jpg', link: '/weight'},
+        {title: 'Журнал тренировок', image: '/images/history.jpg', link: '/history'},
+        {title: 'Добавить тренировку', image: '/images/create.jpg', link: '/add'}
+      ]
+    }),
+    created() {
+      if (!this.user) {
+        if (process.browser) {
+          const token = localStorage.getItem('workout-token');
+          const userId = localStorage.getItem('workout-userId');
 
-<style lang="scss" scoped>
-  .weight,
-  .weight-chart,
-  .train {
-    padding: 20px;
-    border-radius: 0.5rem;
-    background-color: $light;
-    color: #1a1a1a;
-    text-align: center;
-    text-transform: uppercase;
-    margin-top: 2rem;
-
-    a {
-      color: $font;
-      font-weight: 700;
-    }
-  }
-
-  .btn {
-    margin-top: 2rem;
-    width: 100%;
-    text-transform: uppercase;
-    padding: 1rem;
-  }
-
-  .card {
-    &-body {
-      text-align: center;
-      text-transform: uppercase;
-      align-self: center;
-
-      a {
-        &:hover, &.hover,
-        &:focus, &.focus,
-        &:active, &.active {
-          text-decoration: none !important;
-          color: #1a1a1a;
-          outline: none !important;
+          if (token && userId) {
+            return this.$store.dispatch('authUserById', userId);
+          } else {
+            this.$router.push('/login');
+          }
         }
       }
-    }
-
-    &-title {
-      margin-bottom: 0 !important;
-      color: #1a1a1a;
-
-      &:hover, &.hover,
-      &:focus, &.focus,
-      &:active, &.active {
-        text-decoration: none !important;
-        color: #1a1a1a;
-        outline: none !important;
-      }
+    },
+    computed: {
+      ...mapGetters(['user'])
     }
   }
-
-  .mt-3 {
-    margin-top: 16px !important;
-  }
-</style>
-
-<style lang="scss">
-  a:hover,
-  a.hover {
-    text-decoration: none !important;
-  }
-
-  * {
-    outline: none !important;
-  }
-</style>
+</script>

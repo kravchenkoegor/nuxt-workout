@@ -1,96 +1,123 @@
 <template>
-  <div id="create">
-    <div class="container">
-      <div class="row">
-        <div class="col-12">
-          <h2>Записать тренировку</h2>
-        </div>
+  <v-container id="create">
+    <v-layout row wrap>
+      <v-flex xs12>
+        <v-flex xs12 class="back">
+          <v-btn icon nuxt to="/add" exact>
+            <v-icon>fas fa-chevron-left</v-icon>
+          </v-btn>
+        </v-flex>
 
-        <div class="col-12 my-4">
+        <v-flex xs12 class="position-relative">
+          <h2>Записать тренировку</h2>
+        </v-flex>
+
+        <v-flex xs12 my-4>
           <v-dialog
-              ref="dialog"
-              v-model="datepicker"
-              :return-value.sync="date"
-              persistent
-              lazy
-              full-width
-              width="290px"
+            ref="dialog"
+            v-model="datepicker"
+            :return-value.sync="date"
+            persistent
+            lazy
+            full-width
+            width="290px"
           >
             <v-text-field
-                slot="activator"
-                v-model="computedDateFormatted"
-                label="Дата тренировки"
-                prepend-icon="far fa-calendar-alt"
-                readonly
-                class="training__input training__input_date"
-                @change="$store.dispatch('setDate', computedDateFormatted)"
+              slot="activator"
+              v-model="computedDateFormatted"
+              label="Дата тренировки"
+              prepend-icon="far fa-calendar-alt"
+              readonly
+              class="training__input training__input_date"
+              @change="$store.dispatch('setDate', computedDateFormatted)"
             ></v-text-field>
+
             <v-date-picker
-                v-model="date"
-                :color="'#18ba60'"
-                scrollable
-                :first-day-of-week="'1'"
-                :locale="'ru-ru'"
-                :title-date-format="value => formatDateShort(value)"
+              v-model="date"
+              color="secondary"
+              scrollable
+              :first-day-of-week="'1'"
+              :locale="'ru-ru'"
+              :title-date-format="value => formatDateShort(value)"
             >
+
               <v-spacer></v-spacer>
-              <v-btn flat :color="'rgba(0,0,0,.87)'" @click="datepicker = false">Отмена</v-btn>
-              <v-btn flat :color="'#18ba60'" @click="$refs.dialog.save(date)">OK</v-btn>
+
+              <v-btn
+                flat
+                color="'rgba(0,0,0,.87)'"
+                @click="datepicker = false"
+              >Отмена
+              </v-btn>
+
+              <v-btn
+                color="secondary"
+                dark
+                raised
+                @click="$refs.dialog.save(date)"
+              >OK
+              </v-btn>
             </v-date-picker>
           </v-dialog>
-        </div>
+        </v-flex>
 
-        <div class="col-12 mb-4">
-          <div class="row">
-            <div class="col-6">
-              <p>Начало тренировки</p>
-              <div class="row">
-                <div class="col-12 d-flex justify-content-start">
-                  <v-text-field
-                      v-model="startHH"
-                      placeholder="чч"
-                      type="number"
-                      class="training__input training__input_time"
-                      mask="##"
-                  ></v-text-field>
-                  <span class="training__divider">:</span>
-                  <v-text-field
-                      v-model="startMM"
-                      placeholder="мм"
-                      type="number"
-                      class="training__input training__input_time"
-                      mask="##"
-                  ></v-text-field>
-                </div>
-              </div>
-            </div>
+        <v-layout row>
+          <v-flex xs6 pr-2>
+            <p>Начало тренировки</p>
+            <v-layout row>
+              <v-flex xs6 d-flex justify-content-start>
+                <v-text-field
+                  v-model="startHH"
+                  placeholder="чч"
+                  type="number"
+                  class="training__input training__input_time"
+                  mask="##"
+                ></v-text-field>
 
-            <div class="col-6">
-              <p>Конец тренировки</p>
-              <div class="row">
-                <div class="col-12 d-flex justify-content-start">
-                  <v-text-field
-                      v-model="endHH"
-                      placeholder="чч"
-                      type="number"
-                      class="training__input training__input_time"
-                      mask="##"
-                  ></v-text-field>
-                  <span class="training__divider">:</span>
-                  <v-text-field
-                      v-model="endMM"
-                      placeholder="мм"
-                      type="number"
-                      class="training__input training__input_time"
-                      mask="##"
-                  ></v-text-field>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                <span class="training__divider">:</span>
+              </v-flex>
 
-        <div class="col-12" v-if="training.length">
+              <v-flex xs6>
+                <v-text-field
+                  v-model="startMM"
+                  placeholder="мм"
+                  type="number"
+                  class="training__input training__input_time"
+                  mask="##"
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+
+          <v-flex xs6 pl-2>
+            <p>Конец тренировки</p>
+            <v-layout row>
+              <v-flex xs6 d-flex justify-content-start>
+                <v-text-field
+                  v-model="endHH"
+                  placeholder="чч"
+                  type="number"
+                  class="training__input training__input_time"
+                  mask="##"
+                ></v-text-field>
+
+                <span class="training__divider">:</span>
+              </v-flex>
+
+              <v-flex xs6>
+                <v-text-field
+                  v-model="endMM"
+                  placeholder="мм"
+                  type="number"
+                  class="training__input training__input_time"
+                  mask="##"
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+        </v-layout>
+
+        <v-flex xs12 my-4 v-if="training.length">
           <v-list two-line class="training__list">
             <v-list-tile v-for="(exercise, index) in training" :key="index" class="mb-4">
               <v-list-tile-content>
@@ -107,94 +134,148 @@
                   </p>
                 </div>
 
-                <button class="btn btn-primary exercise__add-set" type="button" @click="dialogSets = !dialogSets">
-                  <i class="fas fa-plus-circle"></i>&nbsp;&nbsp;подход
-                </button>
+                <v-btn
+                  color="secondary"
+                  class="exercise__add-set"
+                  @click="dialogSets = !dialogSets"
+                >
+                  <v-icon left small>fas fa-plus-circle</v-icon>
+                  подход
+                </v-btn>
               </v-list-tile-content>
             </v-list-tile>
           </v-list>
-        </div>
+        </v-flex>
 
-        <div class="col-6">
-          <button class="btn btn-success" type="button" @click="dialog = !dialog">
-            <i class="fas fa-plus-circle"></i>&nbsp;&nbsp;упражнение</button>
-        </div>
+        <v-flex xs12 mt-4>
+          <v-layout row>
+            <v-flex xs6>
+              <v-btn
+                color="primary"
+                @click="dialog = !dialog"
+                class="my-0 ml-0 mr-1"
+              >
+                <v-icon left small>fas fa-plus-circle</v-icon>
+                упражнение
+              </v-btn>
+            </v-flex>
 
-        <div class="col-6">
-          <button class="btn btn-success" type="button" @click="saveTraining">
-            <i class="fas fa-check-circle"></i>&nbsp;&nbsp;Сохранить
-          </button>
-        </div>
+            <v-flex xs6>
+              <v-btn
+                color="#D4B483"
+                dark
+                block
+                @click="saveTraining"
+                class="my-0 mr-0 ml-1"
+              >
+                <v-icon left small>fas fa-check-circle</v-icon>
+                Сохранить
+              </v-btn>
+            </v-flex>
+          </v-layout>
+        </v-flex>
 
-        <div class="col-12 mt-3">
-          <nuxt-link class="btn btn-success" :to="'/'">
-            <i class="fas fa-undo-alt"></i>&nbsp;&nbsp;На главную
-          </nuxt-link>
-        </div>
+        <v-dialog v-model="dialog">
+          <v-toolbar color="primary" dark>
+            <v-toolbar-title>Добавить упражнение</v-toolbar-title>
+          </v-toolbar>
 
-        <v-dialog v-model="dialog" width="500">
-          <v-card>
-            <v-card-title class="headline" primary-title>
-              Добавить упражнение
-            </v-card-title>
+          <v-layout align-center justify-center>
+            <v-flex xs12>
+              <v-card>
+                <v-card-text>
+                  <template v-if="!addExercise.title">
+                    <v-select
+                      v-model="muscleGroup"
+                      :items="muscleGroups"
+                      label="Группа мышц"
+                    ></v-select>
 
-            <v-card-text>
-              <template v-if="!addExercise.title">
-                <v-select
-                    v-model="muscleGroup"
-                    :items="muscleGroups"
-                    label="Группа мышц"
-                ></v-select>
+                    <v-text-field
+                      v-model="exercise"
+                      label="Название упражнения"
+                    ></v-text-field>
+                  </template>
+                </v-card-text>
 
-                <v-text-field
-                    v-model="exercise"
-                    label="Название упражнения"
-                ></v-text-field>
-              </template>
-            </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    flat
+                    color="#ED1C24"
+                    @click="dialog = false"
+                  >Отмена
+                  </v-btn>
 
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <button class="btn btn-success" type="button" @click="addNewExercise">Добавить</button>
-            </v-card-actions>
-          </v-card>
+                  <v-btn
+                    color="primary"
+                    dark
+                    raised
+                    @click="addNewExercise"
+                  >Добавить
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-flex>
+          </v-layout>
         </v-dialog>
 
         <v-dialog v-model="dialogSets" class="training__dialog">
-          <v-card>
-            <v-card-title class="headline" primary-title>{{ getExercise }}</v-card-title>
+          <v-toolbar color="primary" dark>
+            <v-toolbar-title>{{ getExercise }}</v-toolbar-title>
+          </v-toolbar>
 
-            <v-card-text>
-              <div class="row">
-                <div class="col-6">
-                  <v-text-field
-                      v-model="weight"
-                      label="Вес"
-                      type="number"
-                  ></v-text-field>
-                </div>
-                <div class="col-6">
-                  <v-text-field
-                      v-model="repeats"
-                      label="Повторения"
-                      type="number"
-                  ></v-text-field>
-                </div>
-              </div>
-            </v-card-text>
+          <v-layout align-center justify-center>
+            <v-flex xs12>
+              <v-card>
+                <v-card-text>
+                  <div class="row">
+                    <div class="col-6">
+                      <v-text-field
+                        v-model="weight"
+                        label="Вес"
+                        type="number"
+                      ></v-text-field>
+                    </div>
+                    <div class="col-6">
+                      <v-text-field
+                        v-model="repeats"
+                        label="Повторения"
+                        type="number"
+                      ></v-text-field>
+                    </div>
+                  </div>
+                </v-card-text>
 
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <button class="btn btn-primary v-card__btn" type="button" @click="addSet(weight, repeats)">Добавить</button>
-            </v-card-actions>
-          </v-card>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    flat
+                    color="#ED1C24"
+                    @click="dialogSets = false"
+                  >Отмена
+                  </v-btn>
+
+                  <v-btn
+                    color="primary"
+                    @click="addSet(weight, repeats)"
+                    class="v-card__btn"
+                  >
+                    Добавить
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-flex>
+          </v-layout>
         </v-dialog>
-      </div>
-    </div>
-  </div>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
+  import {mapGetters} from 'vuex';
+
   export default {
     name: 'Create',
     data: () => ({
@@ -212,107 +293,101 @@
       repeats: null,
       muscleGroup: null,
       muscleGroups: ['Ноги', 'Спина', 'Грудь', 'Плечи', 'Трицепс', 'Бицепс', 'Пресс', 'Кардио'],
-      training: [],
       addExercise: {
         title: '',
         muscleGroup: '',
         sets: []
       }
     }),
-    created () {
-      this.training = this.$store.getters.getTraining
+    computed: {
+      ...mapGetters(['user', 'training']),
+      getExercise() {
+        const exercise = this.$store.getters.getExercise
+        return exercise.title
+      },
+      computedDateFormatted() {
+        return this.formatDate(this.date)
+      }
+    },
+    created() {
+      if (!this.user) {
+        this.$router.push('/login');
+      }
     },
     methods: {
-      save () {
+      save() {
         if (this.weight && this.repeats) {
-          this.addSet(this.weight, this.repeats)
+          this.addSet(this.weight, this.repeats);
         }
 
         this.$store.dispatch('saveExercise')
           .then(() => {
-            this.clear()
-            this.dialogSets = false
+            this.clear();
+            this.dialogSets = false;
           })
-          .catch(error => console.log(error))
+          .catch(error => console.log(error));
       },
-      addNewExercise () {
-        if (this.weight) this.weight = null
+      addNewExercise() {
+        if (this.weight) this.weight = null;
 
         const exercise = {
           title: this.exercise,
           muscleGroup: this.muscleGroup,
           sets: []
-        }
+        };
 
         this.$store.dispatch('addExercise', exercise)
           .then(() => {
-            this.exercise = null
-            this.muscleGroup = null
-            this.dialog = false
+            this.exercise = null;
+            this.muscleGroup = null;
+            this.dialog = false;
           })
-          .catch(error => console.log(error))
+          .catch(error => console.log(error));
       },
-      addSet (weight, repeats) {
-        const set = { weight, repeats }
-        this.addExercise.sets.push({ weight, repeats })
-        this.repeats = null
+      addSet(weight, repeats) {
+        const set = {weight, repeats};
+        this.addExercise.sets.push({weight, repeats});
+        this.repeats = null;
         this.$store.dispatch('addSet', set)
-          .then(() => {
-            this.dialogSets = false
-          })
-          .catch(error => console.log(error))
+          .then(() => this.dialogSets = false)
+          .catch(error => console.log(error));
       },
-      clear () {
-        this.weight = null
-        this.repeats = null
-        this.exercise = null
-        this.muscleGroup = null
+      clear() {
+        this.weight = null;
+        this.repeats = null;
+        this.exercise = null;
+        this.muscleGroup = null;
         this.addExercise = {
           title: '',
           muscleGroup: '',
           sets: []
-        }
+        };
       },
-      async saveTraining () {
-        try {
-          const [year, month, day] = this.date.split('-')
-          const result = await this.$axios.post('/create', {
-            day,
-            month,
-            year,
-            date: this.date,
-            startTime: `${this.startHH}:${this.startMM}`,
-            endTime: `${this.endHH}:${this.endMM}`,
-            exercises: this.training
-          })
-          if (result) {
-            this.$router.push('/history')
-          }
-        } catch (error) {
-          console.log(error)
-        }
+      saveTraining() {
+        const [year, month, day] = this.date.split('-');
+        const newTraining = {
+          day,
+          month,
+          year,
+          date: this.date,
+          startTime: `${this.startHH}:${this.startMM}`,
+          endTime: `${this.endHH}:${this.endMM}`,
+          exercises: this.training,
+          createdBy: this.user._id
+        };
+
+        this.$store.dispatch('saveTraining', newTraining)
+          .then(() => this.$router.push('/history'))
       },
-      formatDate (date) {
-        if (!date) return null
-        return this.$moment(date).format('D MMMM YYYY')
+      formatDate(date) {
+        if (!date) return null;
+        return this.$moment(date).format('D MMMM YYYY');
       },
-      formatDateShort (date) {
-        if (!date) return null
-        return this.$moment(date).format('D MMMM')
+      formatDateShort(date) {
+        if (!date) return null;
+        return this.$moment(date).format('D MMMM');
       }
     },
-    computed: {
-      hasTraining () {
-        return this.$store.getters.getTraining
-      },
-      getExercise () {
-        const exercise = this.$store.getters.getExercise
-        return exercise.title
-      },
-      computedDateFormatted () {
-        return this.formatDate(this.date)
-      }
-    }
   }
 </script>
 
@@ -439,17 +514,5 @@
 
   p {
     margin: 0;
-  }
-
-  .btn {
-    line-height: 24px;
-    width: 100%;
-    margin: 0 auto;
-    text-transform: uppercase;
-  }
-
-  button:focus,
-  button.focus {
-    outline: none !important;
   }
 </style>

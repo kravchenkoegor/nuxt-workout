@@ -1,82 +1,99 @@
 <template>
-  <div class="history">
-    <div class="container">
-      <div class="row">
-        <div class="col-12">
-          <h2 class="mb-0">Журнал тренировок</h2>
-        </div>
+  <v-container fill-height>
+    <v-layout row wrap>
+      <v-flex xs12>
+        <v-flex xs12 class="back">
+          <v-btn icon nuxt to="/" exact>
+            <v-icon>fas fa-chevron-left</v-icon>
+          </v-btn>
+        </v-flex>
 
-        <div class="col-12 my-4">
-          <nuxt-link
+        <v-flex xs12 mb-4 class="position-relative">
+          <h2>Журнал тренировок</h2>
+        </v-flex>
+
+        <template v-if="getFormattedMonths.length">
+          <v-flex
+            xs12
             v-for="(item, index) in getFormattedMonths"
             :key="index"
-            :to="{ name: 'history-id', params: { id: `${item.year}-${formatMonth(item.month)}` } }"
-            class="history__item shadow"
+            :class="{
+            'mb-3': index !== getFormattedMonths.length - 1,
+            'mb-4': index === getFormattedMonths.length - 1
+          }"
           >
-            <div class="history__item-date">{{ item.month }} {{ item.year }}</div>
-            <i class="fas fa-check-circle"></i>
-          </nuxt-link>
-        </div>
+            <nuxt-link
+              :to="{ name: 'history-id', params: { id: `${item.year}-${formatMonth(item.month)}` } }"
+              class="history__item elevation-4"
+            >
+              <div class="history__item-date">{{ item.month }} {{ item.year }}</div>
+              <i class="fas fa-check-circle"></i>
+            </nuxt-link>
+          </v-flex>
+        </template>
 
-        <div class="col-12">
-          <nuxt-link class="history__btn btn btn-success" :to="'/'">
-            <i class="fas fa-undo-alt"></i>&nbsp;&nbsp;На главную
-          </nuxt-link>
-        </div>
-      </div>
-    </div>
-  </div>
+        <template v-else>
+          <v-layout row justify-center align-center class="history__empty">
+            <v-flex xs12 text-xs-center>
+              <p>У Вас еще нет тренировок.</p>
+              <v-btn color="primary" nuxt to="/create" exact>
+                <v-icon left small>fas fa-plus-circle</v-icon>
+                Добавить
+              </v-btn>
+            </v-flex>
+          </v-layout>
+
+        </template>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
+  import {mapGetters} from 'vuex';
+
   export default {
     name: 'History',
-    async fetch ({ app, store }) {
-      let trainings = await app.$axios.$get('/history')
-      if (trainings) {
-        store.dispatch('setTrainingsHistory', trainings)
-      }
-    },
     data: () => ({
-      trainings: null,
       dates: []
     }),
-    mounted () {
-      this.trainings = this.$store.getters.getTrainingsHistory
-      this.getTrainingMonths()
+    created() {
+      if (!this.user) this.$router.push('/login')
+      else this.$store.dispatch('fetchTrainingsHistory', this.user._id);
     },
     computed: {
-      getFormattedMonths () {
+      ...mapGetters(['user', 'history']),
+      getFormattedMonths() {
         return this.dates.map(item => {
           return {
-            month: this.$moment().month(+item.month - 1).format('MMMM'),
+            month: this.$moment().month(Number(item.month) - 1).format('MMMM'),
             year: item.year
           }
         })
       }
     },
+    watch: {
+      history() {
+        this.getTrainingMonths();
+      }
+    },
     methods: {
-      getTrainingMonths () {
-        this.trainings.forEach(training => {
-          const { month, year } = training
+      getTrainingMonths() {
+        this.history.forEach(training => {
+          const {month, year} = training;
           if (!this.dates.some(el => el.month === month && el.year === year)) {
-            this.dates.push({ month, year })
+            this.dates.push({month, year});
           }
         })
       },
-      formatMonth (month) {
-        return this.$moment().month(month).format('MM')
+      formatMonth(month) {
+        return this.$moment().month(month).format('MM');
       }
     }
   }
 </script>
 
 <style lang="scss">
-  .container {
-    padding-top: 20px;
-    padding-bottom: 20px;
-  }
-
   .history {
     &__item {
       position: relative;
@@ -84,7 +101,7 @@
       justify-content: flex-start;
       border: 1px solid #ddd;
       border-radius: .5rem;
-      padding: 1rem;
+      padding: 16px 32px 16px 16px;
       color: #1a1a1a;
       font-weight: 700;
       line-height: 20px;
@@ -103,18 +120,12 @@
       }
 
       &-date {
-        width: 170px;
+        width: 150px;
       }
     }
 
-    &__btn {
-      display: inline-block;
-      width: 100%;
-      text-transform: uppercase;
-      padding-left: 1rem;
-      padding-right: 1rem;
-      margin-top: 2rem;
-      line-height: 24px;
+    &__empty {
+      height: calc(100% - 72px);
     }
   }
 </style>

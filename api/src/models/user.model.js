@@ -1,4 +1,5 @@
-const mongoose = require ('mongoose')
+const mongoose = require('mongoose');
+const moment = require('moment');
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -16,25 +17,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  fullName: String,
-  location: String,
-  dateOfBirth: String
-})
+  createdDate: {
+    type: String,
+    default: moment().format('DD.MM.YYYY')
+  }
+});
 
-// Encrypt password before saving to database
-// userSchema.pre('save', function(next) {
-//   const user = this
-//   if (this.isModified('password') || this.isNew) {
-//     bcrypt.hash(user.password, 10, (error, hash) => {
-//       if (error) {
-//         return next(error)
-//       }
-//       user.password = hash
-//       next()
-//     })
-//   } else {
-//     return next()
-//   }
-// })
-
-mongoose.model('authUsers', userSchema)
+mongoose.model('users', userSchema);

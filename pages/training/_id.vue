@@ -1,21 +1,22 @@
 <template>
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
+  <v-container>
+    <v-layout row wrap>
+      <v-flex xs12>
         <div class="workout">
           <div class="workout__header">
+            <div class="back back-0">
+              <v-btn icon nuxt to="/add" exact>
+                <v-icon>fas fa-chevron-left</v-icon>
+              </v-btn>
+            </div>
+
             <div class="workout__date">
               <i class="far fa-calendar-alt"></i>
-              {{ training.date }}
+              {{ getFormattedTrainingDate(training.date) }}
             </div>
             <div class="workout__time">
               <i class="far fa-clock"></i>
               {{ training.startTime }} <span>&mdash;</span> {{ training.endTime }}
-            </div>
-            <div class="workout__btn">
-              <router-link class="btn btn-success" :to="'/history'">
-                <i class="fas fa-list-ul"></i>&nbsp;&nbsp;Журнал
-              </router-link>
             </div>
           </div>
 
@@ -36,23 +37,40 @@
               </div>
             </div>
           </div>
+
+          <v-flex xs12 mt-4>
+            <v-layout row>
+              <v-flex xs6 mr-1>
+                <v-btn
+                  nuxt
+                  block
+                  color="primary"
+                  to="/history"
+                  class="ma-0"
+                >
+                  <v-icon left small>fas fa-list-ul</v-icon>
+                  Журнал
+                </v-btn>
+              </v-flex>
+
+              <v-flex xs6 ml-1>
+                <v-btn
+                  color="#ED1C24"
+                  dark
+                  block
+                  @click="deleteTraining"
+                  class="ma-0"
+                >
+                  <v-icon left small>fas fa-trash-alt</v-icon>
+                  Удалить
+                </v-btn>
+              </v-flex>
+            </v-layout>
+          </v-flex>
         </div>
-
-        <div class="col-12 px-0 d-flex text-center">
-          <button class="btn btn-success" type="button" @click="$router.push({ name: 'history' })">
-            <i class="fas fa-arrow-left"></i>&nbsp;Назад
-          </button>
-
-          <button class="btn btn-danger" type="button" @click="deleteTraining">
-            <i class="fas fa-trash-alt"></i>&nbsp;Удалить
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
@@ -80,35 +98,22 @@
         if (result) {
           this.$router.push({ name: 'history' })
         }
+      },
+      getFormattedTrainingDate(date) {
+        return this.$moment(date).format('DD MMMM');
       }
     }
   }
 </script>
 
 <style lang="scss" scoped>
-  .container {
-    padding-top: 20px;
-    padding-bottom: 20px;
-  }
-
   .workout {
     &__header {
       font-size: 18px;
       font-weight: 700;
       margin-bottom: 1em;
       position: relative;
-    }
-
-    &__btn {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      right: 0;
-
-      a {
-        text-transform: uppercase;
-        padding: .5rem 1rem;
-      }
+      text-align: center;
     }
 
     &__exercise {

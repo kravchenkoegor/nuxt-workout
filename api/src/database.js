@@ -8,7 +8,7 @@ const mongooseOptions = {
 require('./models/user.model')
 
 module.exports = {
-  User: mongoose.model('authUsers'),
+  User: mongoose.model('users'),
   connect () {
     mongoose.connect(process.env.PROD_MONGODB, mongooseOptions)
       .then(() => console.log('MongoDB connected'))

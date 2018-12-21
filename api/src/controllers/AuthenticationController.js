@@ -1,67 +1,64 @@
-const jwt = require('jsonwebtoken')
-const config = require('../config/main')
-const database = require('../database')
+const jwt = require('jsonwebtoken');
+const config = require('../config/main');
+const {User} = require('../database');
+
+function createToken(user, secret, expiresIn) {
+  const {username, email} = user;
+  return jwt.sign({username, email}, secret, {expiresIn});
+}
 
 module.exports = {
-  async register (req, res) {
+  async register(req, res) {
     try {
-      const user = await new database.User(req.body).save()
-      res.json(user)
-    } catch (error) {
-      res.status(400).send({
-        error: `An error has occured ${error}`
-      })
-    }
-  },
-  async login (req, res) {
-    try {
-      const {email, password} = req.body
-      const user = await database.User.findOne({email: email})
+      const {username, email, password} = req.body;
+      const user = await User.findOne({username});
 
       if (!user) {
-        res.status(400).send({ success: false, message: 'User not found' })
+        const newUser = await new User({username, email, password}).save();
+        res.json({
+          user: newUser,
+          token: createToken(newUser, config.secret, '1w')
+        });
       } else {
-        database.comparePassword(password, user.password)
-            .then(() => {
-              const token = jwt.sign(user.toJSON(), config.secret, {
-                expiresIn: 604800 // 1 week
-              })
-              res.json({
-                success: true,
-                token: `jwt ${token}`,
-                user: user.toJSON()
-              })
-            })
-            .catch(err => {
-              console.log(err)
-              res.json({ success: false, message: 'Wrong password' })
-            })
+        res.status(400).send({error: 'Пользователь уже существует'});
       }
     } catch (error) {
-      res.status(400).send({
-        error: `An error has occured ${error}`
-      })
+      res.status(400).send({error: `An error has occured ${error}`});
     }
   },
-  async getUser (req, res) {
+  async login(req, res) {
     try {
-      const user = await database.User.findById(req.body.id)
-      res.json(user)
+      const {username, password} = req.body
+      const user = await User.findOne({username});
+
+      if (!user) res.status(400).send({error: 'Пользователя не существует'});
+      else {
+        if (user.password === password) {
+          res.json({
+            user,
+            token: createToken(user, config.secret, '1w')
+          });
+        } else {
+          res.status(400).send({error: 'Неверный пароль'})
+        }
+      }
     } catch (error) {
-      res.status(400).send({
-        error: `An error has occured ${error}`
-      })
+      res.status(400).send({error: `An error has occured ${error}`});
     }
   },
-  async saveUser (req, res) {
+  async getUserById(req, res) {
     try {
-      const newUser = await database.User.findByIdAndUpdate(req.body._id, req.body)
-      console.log(newUser)
-      res.json({ success: true, message: 'User has been updated' })
+      const user = await User.findOne({_id: req.body.userId});
+
+      if (!user) res.status(200).send({error: 'Пользователя не существует'});
+      else {
+        res.json({
+          user,
+          token: createToken(user, config.secret, '1w')
+        });
+      }
     } catch (error) {
-      res.status(400).send({
-        error: `An error has occured ${error}`
-      })
+      res.status(400).send({error: `An error has occured ${error}`});
     }
   }
 }
