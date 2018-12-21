@@ -2,20 +2,15 @@
   <v-app style="background: #FBFEF9;">
     <v-navigation-drawer v-model="drawer" fixed app>
       <v-list>
-        <v-list-tile @click="">
+        <v-list-tile
+          v-for="item in menuLinks"
+          :key="item.link"
+        >
           <v-list-tile-action>
-            <v-icon>home</v-icon>
+            <v-icon>{{ item.icon }}</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title>Home</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile @click="">
-          <v-list-tile-action>
-            <v-icon>contact_mail</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Contact</v-list-tile-title>
+            <v-list-tile-title>{{ item.text }}</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
 
@@ -56,7 +51,21 @@
       drawer: false
     }),
     computed: {
-      ...mapGetters(['user'])
+      ...mapGetters(['user']),
+      menuLinks() {
+        const links = [
+          {text: 'Войти', icon: 'fas fa-sign-out-alt', link: '/login'}
+        ];
+
+        if (this.user) {
+          links.push(
+            {text: 'Добавить тренировку', icon: 'fas fa-edit', link: '/add'},
+            {text: 'Журнал тренировок', icon: 'fas fa-list-ul', link: '/history'}
+          )
+        }
+
+        return links;
+      }
     },
     methods: {
       logout() {

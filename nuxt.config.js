@@ -18,14 +18,13 @@ module.exports = {
     ]
   },
   loading: {
-    color: '#30c670',
-    // color: '#82b1ff',
-    failedColor: '#ff8a80',
+    color: '#D4B483',
+    failedColor: '#ED1C24',
     height: '5px'
   },
   manifest: {
-    name: 'vue-workout',
-    theme_color: '#30c670'
+    name: 'nuxt-workout',
+    theme_color: '#125E8A'
   },
   modules: [
     '@nuxtjs/pwa',
@@ -37,8 +36,9 @@ module.exports = {
     iconfont: 'fa',
     theme: {
       primary: '#125E8A',
-      secondary: '#48A9A6'
-      //secondary: '#197BBD'
+      secondary: '#48A9A6',
+      accent: '#D4B483',
+      error: '#ED1C24'
     }
   },
   plugins: [

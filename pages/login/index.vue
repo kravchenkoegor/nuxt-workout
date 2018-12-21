@@ -53,8 +53,8 @@
     name: 'Login',
     data: () => ({
       isFormValid: true,
-      username: 'ekravchenko',
-      password: '123456',
+      username: '',
+      password: '',
       usernameRules: [
         username => !!username || 'Введите имя',
         username => username.length >= 3 || 'Имя не может быть короче 3 символов'
@@ -78,7 +78,3 @@
     }
   }
 </script>
-
-<style lang="scss" scoped>
-
-</style>

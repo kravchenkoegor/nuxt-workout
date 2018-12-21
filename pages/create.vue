@@ -162,7 +162,7 @@
 
             <v-flex xs6>
               <v-btn
-                color="#D4B483"
+                color="accent"
                 dark
                 block
                 @click="saveTraining"
@@ -202,7 +202,7 @@
                   <v-spacer></v-spacer>
                   <v-btn
                     flat
-                    color="#ED1C24"
+                    color="error"
                     @click="dialog = false"
                   >Отмена
                   </v-btn>
@@ -251,7 +251,7 @@
                   <v-spacer></v-spacer>
                   <v-btn
                     flat
-                    color="#ED1C24"
+                    color="error"
                     @click="dialogSets = false"
                   >Отмена
                   </v-btn>

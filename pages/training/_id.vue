@@ -55,7 +55,7 @@
 
               <v-flex xs6 ml-1>
                 <v-btn
-                  color="#ED1C24"
+                  color="error"
                   dark
                   block
                   @click="deleteTraining"
