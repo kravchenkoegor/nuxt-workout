@@ -73,7 +73,7 @@ const store = () => new Vuex.Store({
         .catch((error) => console.error(error));
     },
     loginUser({commit}, credentials) {
-      this.$axios.$post('/login', credentials)
+      this.$axios.$post(`/login`, credentials)
         .then((result) => {
           const {user, token} = result;
           commit('authUser', user);

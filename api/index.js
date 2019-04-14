@@ -1,6 +1,3 @@
-// require('dotenv').config()
-// const path = require('path')
-const https = require('https');
 const express = require('express');
 const router = express.Router({});
 const bodyParser = require('body-parser');
@@ -9,10 +6,10 @@ const redirectSSL = require('redirect-ssl');
 
 // Server
 const app = express();
+app.use(cors());
 app.use(redirectSSL);
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
-app.use(cors());
 
 app.use(router);
 require('./src/routes')(router);
@@ -20,9 +17,6 @@ require('./src/routes')(router);
 // Database
 const database = require('./src/database');
 database.connect();
-
-// Ping
-// setInterval(() => https.get(process.env.BASE_URL), 900000);
 
 module.exports = {
   path: '/api/',

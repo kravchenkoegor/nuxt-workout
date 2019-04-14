@@ -198,7 +198,7 @@
         }
 
         &.good {
-          color: $green;
+          color: #18BA60;
 
           &:before {
             content: '';
@@ -206,14 +206,14 @@
             position: absolute;
             background-color: transparent;
             border: 8px solid transparent;
-            border-top: 12px solid $green;
+            border-top: 12px solid #18BA60;
             top: 28px;
             left: 4px;
           }
         }
 
         &.bad {
-          color: $red-2;
+          color: #F94D41;
 
           &:before {
             content: '';
@@ -221,7 +221,7 @@
             position: absolute;
             background-color: transparent;
             border: 8px solid transparent;
-            border-bottom: 12px solid $red-2;
+            border-bottom: 12px solid #F94D41;
             top: 22px;
             left: 0;
           }

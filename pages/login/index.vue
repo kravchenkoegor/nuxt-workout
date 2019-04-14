@@ -66,15 +66,18 @@
     }),
     methods: {
       onSubmit() {
-        if (this.$refs.form.validate()) {
+        // if (this.$refs.form.validate()) {
           this.$store.dispatch('loginUser', {
             username: this.username,
             password: this.password
           })
             .then(() => this.$router.push('/'))
             .catch(error => console.error(error))
-        }
+        // }
       }
+    },
+    created() {
+      // console.log(process.env.VUE_APP_API_URL)
     }
   }
 </script>

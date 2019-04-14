@@ -116,7 +116,7 @@
         align-self: center;
         font-size: 18px;
         height: 18px;
-        color: $green;
+        color: #18BA60;
       }
 
       &-date {
