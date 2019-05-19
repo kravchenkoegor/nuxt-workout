@@ -1,11 +1,11 @@
-require('dotenv').config()
-const mongoose = require('mongoose')
+require('dotenv').config();
+const mongoose = require('mongoose');
 const mongooseOptions = {
   keepAlive: 300000,
   connectTimeoutMS: 30000,
   useNewUrlParser: true
-}
-require('./models/user.model')
+};
+require('./models/user.model');
 
 module.exports = {
   User: mongoose.model('users'),
@@ -14,4 +14,4 @@ module.exports = {
       .then(() => console.log('MongoDB connected'))
       .catch((err) => console.log(err))
   }
-}
+};

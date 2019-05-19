@@ -9,56 +9,14 @@
         </v-flex>
 
         <v-flex xs12 class="position-relative">
-          <h2>Записать тренировку</h2>
+          <h2>Тренировка</h2>
         </v-flex>
 
         <v-flex xs12 my-4>
-          <v-dialog
-            ref="dialog"
-            v-model="datepicker"
-            :return-value.sync="date"
-            persistent
-            lazy
-            full-width
-            width="290px"
-          >
-            <v-text-field
-              slot="activator"
-              v-model="computedDateFormatted"
-              label="Дата тренировки"
-              prepend-icon="far fa-calendar-alt"
-              readonly
-              class="training__input training__input_date"
-              @change="$store.dispatch('setDate', computedDateFormatted)"
-            ></v-text-field>
-
-            <v-date-picker
-              v-model="date"
-              color="secondary"
-              scrollable
-              :first-day-of-week="'1'"
-              :locale="'ru-ru'"
-              :title-date-format="value => formatDateShort(value)"
-            >
-
-              <v-spacer></v-spacer>
-
-              <v-btn
-                flat
-                color="'rgba(0,0,0,.87)'"
-                @click="datepicker = false"
-              >Отмена
-              </v-btn>
-
-              <v-btn
-                color="secondary"
-                dark
-                raised
-                @click="$refs.dialog.save(date)"
-              >OK
-              </v-btn>
-            </v-date-picker>
-          </v-dialog>
+          <date-picker
+            :isOpen="datepicker"
+            @closeDialog="saveDate"
+          />
         </v-flex>
 
         <v-layout row>
@@ -116,6 +74,16 @@
             </v-layout>
           </v-flex>
         </v-layout>
+
+        <v-flex xs12 my-4 v-if="circuit.length">
+          <div v-for="(c, i) in circuit"
+               :key="i"
+               class="training__circuit"
+               :class="{'mb-4': i !== c.length - 1}"
+          >
+            <circuit :circuit="c" :index="i" />
+          </div>
+        </v-flex>
 
         <v-flex xs12 my-4 v-if="training.length">
           <v-list two-line class="training__list">
@@ -183,138 +151,98 @@
           <v-layout align-center justify-center>
             <v-flex xs12>
               <v-card>
-                <v-card-text>
-                  <template v-if="!addExercise.title">
-                    <v-select
-                      v-model="muscleGroup"
-                      :items="muscleGroups"
-                      label="Группа мышц"
-                    ></v-select>
-
-                    <v-text-field
-                      v-model="exercise"
-                      label="Название упражнения"
-                    ></v-text-field>
-                  </template>
+                <v-card-text class="pb-0">
+                  <v-checkbox
+                    v-model="superSet"
+                    color="primary"
+                    label="Суперсет"
+                    class="ma-0 pt-0 training__checkbox"
+                  ></v-checkbox>
                 </v-card-text>
 
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn
-                    flat
-                    color="error"
-                    @click="dialog = false"
-                  >Отмена
-                  </v-btn>
-
-                  <v-btn
-                    color="primary"
-                    dark
-                    raised
-                    @click="addNewExercise"
-                  >Добавить
-                  </v-btn>
-                </v-card-actions>
+                <template v-if="!addExercise.title">
+                  <exercise
+                    :is-super-set="superSet"
+                    @closeDialog="dialog = false"
+                    @addNewExercise="addNewExercise"
+                    @addNewSuperSet="addNewSuperSet"
+                  />
+                </template>
               </v-card>
             </v-flex>
           </v-layout>
         </v-dialog>
 
-        <v-dialog v-model="dialogSets" class="training__dialog">
-          <v-toolbar color="primary" dark>
-            <v-toolbar-title>{{ getExercise }}</v-toolbar-title>
-          </v-toolbar>
-
-          <v-layout align-center justify-center>
-            <v-flex xs12>
-              <v-card>
-                <v-card-text>
-                  <div class="row">
-                    <div class="col-6">
-                      <v-text-field
-                        v-model="weight"
-                        label="Вес"
-                        type="number"
-                      ></v-text-field>
-                    </div>
-                    <div class="col-6">
-                      <v-text-field
-                        v-model="repeats"
-                        label="Повторения"
-                        type="number"
-                      ></v-text-field>
-                    </div>
-                  </div>
-                </v-card-text>
-
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn
-                    flat
-                    color="error"
-                    @click="dialogSets = false"
-                  >Отмена
-                  </v-btn>
-
-                  <v-btn
-                    color="primary"
-                    @click="addSet(weight, repeats)"
-                    class="v-card__btn"
-                  >
-                    Добавить
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-flex>
-          </v-layout>
-        </v-dialog>
+        <set
+          :is-open="dialogSets"
+          :is-super-set="superSet"
+          :exercise-title="getExercise"
+          @closeDialog="dialogSets = false"
+          @addSet="addSet"
+        />
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
-  import {mapGetters} from 'vuex';
+  import {mapGetters, mapActions} from 'vuex';
+  import DatePicker from '../components/dialogLayouts/DatePicker';
+  import Exercise from '../components/dialogLayouts/Exercise';
+  import Set from '../components/dialogLayouts/Set';
+  import Circuit from '../components/trainingLayouts/Circuit';
 
   export default {
     name: 'Create',
+    components: {
+      DatePicker,
+      Exercise,
+      Set,
+      Circuit
+    },
     data: () => ({
       datepicker: false,
-      date: null,
+      trainingDate: null,
       startHH: null,
       startMM: null,
       endHH: null,
       endMM: null,
       dialog: false,
       dialogSets: false,
-      exercise: null,
       exerciseTitle: null,
       weight: null,
       repeats: null,
-      muscleGroup: null,
-      muscleGroups: ['Ноги', 'Спина', 'Грудь', 'Плечи', 'Трицепс', 'Бицепс', 'Пресс', 'Кардио'],
       addExercise: {
         title: '',
         muscleGroup: '',
         sets: []
-      }
-    }),
-    computed: {
-      ...mapGetters(['user', 'training']),
-      getExercise() {
-        const exercise = this.$store.getters.getExercise
-        return exercise.title
       },
-      computedDateFormatted() {
-        return this.formatDate(this.date)
-      }
-    },
+      superSet: false
+    }),
     created() {
-      if (!this.user) {
+      if (!this.isAuth) {
         this.$router.push('/login');
       }
     },
+    mounted() {
+      // if (process.browser) {
+      //   this.startHH = this.$moment(Date.now()).format('HH');
+      //   this.startMM = this.$moment(Date.now()).format('mm');
+      // }
+    },
+    computed: {
+      ...mapGetters('user', ['isAuth']),
+      ...mapGetters(['training', 'circuit']),
+      getExercise() {
+        const exercise = this.$store.getters.getExercise;
+        return exercise.title;
+      },
+      computedDateFormatted() {
+        return this.formatDate(this.date);
+      }
+    },
     methods: {
+      // ...mapActions(['addExercise']),
       save() {
         if (this.weight && this.repeats) {
           this.addSet(this.weight, this.repeats);
@@ -327,22 +255,19 @@
           })
           .catch(error => console.log(error));
       },
-      addNewExercise() {
+      addNewExercise(exercise) {
         if (this.weight) this.weight = null;
 
-        const exercise = {
-          title: this.exercise,
-          muscleGroup: this.muscleGroup,
-          sets: []
-        };
-
-        this.$store.dispatch('addExercise', exercise)
+        this.$store.dispatch('addExercise', {...exercise, sets: []})
           .then(() => {
             this.exercise = null;
             this.muscleGroup = null;
             this.dialog = false;
           })
           .catch(error => console.log(error));
+      },
+      addNewSuperSet(superSet) {
+
       },
       addSet(weight, repeats) {
         const set = {weight, repeats};
@@ -351,6 +276,12 @@
         this.$store.dispatch('addSet', set)
           .then(() => this.dialogSets = false)
           .catch(error => console.log(error));
+      },
+      addCircuit(circuit) {
+        this.$store.dispatch('addCircuit', circuit)
+          .then(() => {
+            this.dialog = false;
+          })
       },
       clear() {
         this.weight = null;
@@ -364,12 +295,12 @@
         };
       },
       saveTraining() {
-        const [year, month, day] = this.date.split('-');
+        const [year, month, day] = this.trainingDate.split('-');
         const newTraining = {
           day,
           month,
           year,
-          date: this.date,
+          date: this.trainingDate,
           startTime: `${this.startHH}:${this.startMM}`,
           endTime: `${this.endHH}:${this.endMM}`,
           exercises: this.training,
@@ -386,6 +317,13 @@
       formatDateShort(date) {
         if (!date) return null;
         return this.$moment(date).format('D MMMM');
+      },
+      saveDate(date) {
+        this.datepicker = false;
+
+        if (date) {
+          this.trainingDate = date;
+        }
       }
     },
   }
@@ -407,6 +345,12 @@
           input {
             text-align: center;
           }
+        }
+      }
+
+      &__checkbox {
+        .v-input--selection-controls:not(.v-input--hide-details) .v-input__slot {
+          margin: 0 !important;
         }
       }
 
@@ -437,6 +381,26 @@
 
           &__title {
             text-align: center;
+          }
+        }
+      }
+
+      &__circuit {
+        background: #eee;
+        border-radius: .5rem;
+        padding: 1rem;
+
+        h4 {
+          margin-bottom: 1rem;
+          text-align: center;
+        }
+
+        .training__list {
+          background: #eee;
+
+          .v-list__tile {
+            background: #fff;
+            padding: .5rem;
           }
         }
       }
@@ -472,7 +436,10 @@
           padding-left: 1rem;
           padding-right: 1rem;
         }
+      }
 
+      .v-input--selection-controls:not(.v-input--hide-details) .v-input__slot {
+        margin: 0 !important;
       }
     }
 

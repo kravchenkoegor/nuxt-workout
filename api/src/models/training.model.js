@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const {ObjectId} = mongoose.Types;
 ObjectId.prototype.valueOf = function() {
-  return this.toString()
+  return this.toString();
 }
 
 const trainingSchema = new mongoose.Schema({
@@ -25,6 +25,9 @@ const trainingSchema = new mongoose.Schema({
     type: String
   },
   exercises: {
+    type: Array
+  },
+  circuits: {
     type: Array
   },
   createdBy: {

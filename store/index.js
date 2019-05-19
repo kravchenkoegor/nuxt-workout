@@ -1,13 +1,19 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
+import {user} from './user';
+
 Vue.use(Vuex);
 
-const store = () => new Vuex.Store({
+export default () => new Vuex.Store({
+  modules: {
+    user,
+  },
   state: {
-    user: null,
     training: [],
+    circuit: [],
     exercise: {
+      isSuperSet: false,
       title: '',
       muscleGroup: '',
       sets: []
@@ -26,14 +32,13 @@ const store = () => new Vuex.Store({
     weightChart: []
   },
   mutations: {
-    authUser: (state, user) => state.user = user,
-    logoutUser: (state) => state.user = null,
     addExercise (state, exercise) {
       state.exercise = exercise;
       state.exerciseInProgress = exercise.title;
       state.training.push(exercise);
     },
     addSet: (state, set) => state.exercise.sets.push(set),
+    addCircuit: (state, circuit) => state.circuit.push(circuit),
     saveExercise (state) {
       const ex = state.training.find(el => el.title === state.exerciseInProgress);
       ex.sets = state.exercise.sets
@@ -61,50 +66,13 @@ const store = () => new Vuex.Store({
     }
   },
   actions: {
-    registerUser({commit}, credentials) {
-      this.$axios.$post('/register', credentials)
-        .then((result) => {
-          const {user, token} = result;
-          commit('authUser', user);
-          localStorage.setItem('workout-token', token);
-          localStorage.setItem('workout-userId', user._id);
-          this.$router.push('/');
-        })
-        .catch((error) => console.error(error));
-    },
-    loginUser({commit}, credentials) {
-      this.$axios.$post(`/login`, credentials)
-        .then((result) => {
-          const {user, token} = result;
-          commit('authUser', user);
-          localStorage.setItem('workout-token', token);
-          localStorage.setItem('workout-userId', user._id);
-          this.$router.push('/');
-        })
-        .catch(error => console.error(error));
-    },
-    authUserById({commit}, userId) {
-      this.$axios.$post('/user', {userId})
-        .then((result) => {
-          const {user, token} = result;
-          commit('authUser', user);
-          localStorage.setItem('workout-token', token);
-          localStorage.setItem('workout-userId', user._id);
-          this.$router.push('/');
-      })
-        .catch(error => console.error(error));
-    },
-    logoutUser({commit}) {
-      commit('logoutUser');
-      localStorage.removeItem('workout-token');
-      localStorage.removeItem('workout-userId');
-    },
     addExercise ({commit}, exercise) {
       commit('addExercise', exercise)
     },
     addSet ({commit}, sets) {
       commit('addSet', sets)
     },
+    addCircuit: ({commit}, circuit) => commit('addCircuit', circuit),
     saveExercise ({commit}) {
       commit('saveExercise')
     },
@@ -142,8 +110,8 @@ const store = () => new Vuex.Store({
     }
   },
   getters: {
-    user: (state) => state.user,
     training: (state) => state.training,
+    circuit: (state) => state.circuit,
     history: (state) => state.history,
     getExercise (state) {
       return state.exercise
@@ -155,6 +123,4 @@ const store = () => new Vuex.Store({
       return state.weightChart
     },
   }
-})
-
-export default store
+});
