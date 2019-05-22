@@ -41,7 +41,7 @@
   export default {
     name: 'HistoryByMonth',
     created() {
-      if (!this.user) {
+      if (!this.isAuth) {
         this.$router.push('/')
       }
 
@@ -56,7 +56,8 @@
       }
     },
     computed: {
-      ...mapGetters(['user', 'history']),
+      ...mapGetters('user', ['isAuth']),
+      ...mapGetters(['history']),
       getFormattedDate() {
         const [year, month] = this.$route.params.id.split('-');
         return `${this.capitalizeFirstLetter(this.$moment().month(+month - 1).format('MMMM'))} ${year}`;

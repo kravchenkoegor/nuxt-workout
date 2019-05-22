@@ -1,6 +1,6 @@
 <template>
   <div class="exercise">
-    <v-card-text class="pt-0">
+    <v-card-text>
       <template v-if="!isSuperSet">
         <v-select
           v-model="muscleGroup"
@@ -82,11 +82,18 @@
     }),
     methods: {
       addExercise() {
-        console.log({superSet: this.isSuperSet})
         if (this.isSuperSet) {
-          this.$emit('addNewSuperSet', {
-
-          });
+          this.$emit('addNewSuperSet', [
+              {
+                muscleGroup: this.superSetMuscleGroupOne,
+                title: this.superSetExerciseOne
+              },
+              {
+                muscleGroup: this.superSetMuscleGroupTwo,
+                title: this.superSetExerciseTwo
+              }
+            ]
+          );
         } else {
           this.$emit('addNewExercise', {
             title: this.exercise,

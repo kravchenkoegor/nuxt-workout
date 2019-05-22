@@ -58,11 +58,12 @@
       dates: []
     }),
     created() {
-      if (!this.user) this.$router.push('/login')
-      else this.$store.dispatch('fetchTrainingsHistory', this.user._id);
+      if (!this.isAuth) this.$router.push('/login')
+      else this.$store.dispatch('fetchTrainingsHistory', this.userId);
     },
     computed: {
-      ...mapGetters(['user', 'history']),
+      ...mapGetters('user', ['isAuth', 'userId']),
+      ...mapGetters(['history']),
       getFormattedMonths() {
         return this.dates.map(item => {
           return {

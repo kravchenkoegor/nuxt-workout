@@ -153,16 +153,17 @@
               <v-card>
                 <v-card-text class="pb-0">
                   <v-checkbox
-                    v-model="superSet"
+                    v-model="isSuperSet"
                     color="primary"
                     label="Суперсет"
                     class="ma-0 pt-0 training__checkbox"
+                    hide-details
                   ></v-checkbox>
                 </v-card-text>
 
-                <template v-if="!addExercise.title">
+                <template v-if="!newExercise.title">
                   <exercise
-                    :is-super-set="superSet"
+                    :is-super-set="isSuperSet"
                     @closeDialog="dialog = false"
                     @addNewExercise="addNewExercise"
                     @addNewSuperSet="addNewSuperSet"
@@ -175,8 +176,8 @@
 
         <set
           :is-open="dialogSets"
-          :is-super-set="superSet"
-          :exercise-title="getExercise"
+          :is-super-set="isSuperSet"
+          :exercise-title="getCurrentExercise"
           @closeDialog="dialogSets = false"
           @addSet="addSet"
         />
@@ -212,12 +213,12 @@
       exerciseTitle: null,
       weight: null,
       repeats: null,
-      addExercise: {
+      newExercise: {
         title: '',
         muscleGroup: '',
         sets: []
       },
-      superSet: false
+      isSuperSet: false
     }),
     created() {
       if (!this.isAuth) {
@@ -232,23 +233,34 @@
     },
     computed: {
       ...mapGetters('user', ['isAuth']),
-      ...mapGetters(['training', 'circuit']),
-      getExercise() {
-        const exercise = this.$store.getters.getExercise;
-        return exercise.title;
+      ...mapGetters(['training', 'circuit', 'getExercise', 'getSuperSet']),
+      getCurrentExercise() {
+        if (!this.isSuperSet) {
+          const exercise = this.$store.getters.getExercise;
+          return exercise.title;
+        } else {
+          const superSet = this.$store.getters.getSuperSet;
+          return superSet.map(s => s.title);
+        }
       },
       computedDateFormatted() {
         return this.formatDate(this.date);
       }
     },
     methods: {
-      // ...mapActions(['addExercise']),
+      ...mapActions([
+        'addExercise',
+        'saveExercise',
+        'addSuperSet',
+        'addSet',
+        'saveTraining'
+      ]),
       save() {
         if (this.weight && this.repeats) {
           this.addSet(this.weight, this.repeats);
         }
 
-        this.$store.dispatch('saveExercise')
+        this.saveExercise()
           .then(() => {
             this.clear();
             this.dialogSets = false;
@@ -258,7 +270,7 @@
       addNewExercise(exercise) {
         if (this.weight) this.weight = null;
 
-        this.$store.dispatch('addExercise', {...exercise, sets: []})
+        this.addExercise({...exercise, sets: []})
           .then(() => {
             this.exercise = null;
             this.muscleGroup = null;
@@ -267,13 +279,19 @@
           .catch(error => console.log(error));
       },
       addNewSuperSet(superSet) {
-
+        this.addSuperSet(superSet)
+          .then(() => {
+            // this.exercise = null;
+            // this.muscleGroup = null;
+            this.dialog = false;
+          })
+          .catch(error => console.log(error));
       },
       addSet(weight, repeats) {
         const set = {weight, repeats};
-        this.addExercise.sets.push({weight, repeats});
+        this.newExercise.sets.push({weight, repeats});
         this.repeats = null;
-        this.$store.dispatch('addSet', set)
+        this.addSet(set)
           .then(() => this.dialogSets = false)
           .catch(error => console.log(error));
       },
@@ -288,7 +306,7 @@
         this.repeats = null;
         this.exercise = null;
         this.muscleGroup = null;
-        this.addExercise = {
+        this.newExercise = {
           title: '',
           muscleGroup: '',
           sets: []

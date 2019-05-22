@@ -27,8 +27,10 @@ const trainingSchema = new mongoose.Schema({
   exercises: {
     type: Array
   },
-  circuits: {
-    type: Array
+  superSet: {
+    exercises: {
+      type: Array
+    }
   },
   createdBy: {
     type: ObjectId,

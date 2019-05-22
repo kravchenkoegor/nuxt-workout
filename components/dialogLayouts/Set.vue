@@ -12,70 +12,68 @@
         <v-card>
           <v-card-text>
             <template v-if="!isSuperSet">
-              <div class="row">
-                <div class="col-6">
+              <v-layout row wrap>
+                <v-flex xs12>
                   <v-text-field
                     v-model="weight"
                     label="Вес"
                     type="number"
                     hide-details
                   ></v-text-field>
-                </div>
-                <div class="col-6">
+                </v-flex>
+                <v-flex xs12>
                   <v-text-field
                     v-model="repeats"
                     label="Повторения"
                     type="number"
                     hide-details
                   ></v-text-field>
-                </div>
-              </div>
+                </v-flex>
+              </v-layout>
             </template>
 
             <template v-else>
-              <div class="row">
-                <div class="col-12">
-                  <p>{{ exerciseOne }}</p>
-                </div>
-                <div class="col-6">
+              <v-layout row wrap>
+                <v-flex xs12>
+                  <p>{{ exerciseTitle[0] }}</p>
+                </v-flex>
+                <v-flex xs6 class="pr-2">
                   <v-text-field
                     v-model="exerciseOneWeight"
                     label="Вес"
                     type="number"
                     hide-details
                   ></v-text-field>
-                </div>
-                <div class="col-6">
+                </v-flex>
+                <v-flex xs6  class="pl-2">
                   <v-text-field
                     v-model="exerciseOneRepeats"
                     label="Повторения"
                     type="number"
                     hide-details
                   ></v-text-field>
-                </div>
-              </div>
+                </v-flex>
 
-              <div class="row">
-                <div class="col-12">
-                  <p>{{ exerciseTwo }}</p>
-                </div>
-                <div class="col-6">
+                <v-flex xs12 class="mt-4">
+                  <p>{{ exerciseTitle[1] }}</p>
+                </v-flex>
+                <v-flex xs6 class="pr-2">
                   <v-text-field
                     v-model="exerciseTwoWeight"
                     label="Вес"
                     type="number"
                     hide-details
                   ></v-text-field>
-                </div>
-                <div class="col-6">
+                </v-flex>
+                <v-flex xs6 class="pl-2">
                   <v-text-field
                     v-model="exerciseTwoRepeats"
                     label="Повторения"
                     type="number"
                     hide-details
                   ></v-text-field>
-                </div>
-              </div>
+                </v-flex>
+              </v-layout>
             </template>
           </v-card-text>
 
@@ -85,7 +83,8 @@
               flat
               color="error"
               @click="closeDialog"
-            >Отмена
+            >
+              Отмена
             </v-btn>
 
             <v-btn
@@ -108,9 +107,9 @@
     props: {
       isOpen: Boolean,
       isSuperSet: Boolean,
-      exerciseTitle: String,
-      exerciseOne: String,
-      exerciseTwo: String
+      exerciseTitle: String | Array,
+      // exerciseOne: String,
+      // exerciseTwo: String
     },
     data: () => ({
       isVisible: false,
@@ -129,7 +128,7 @@
     },
     methods: {
       addSet() {
-
+        this.$emit()
       },
       closeDialog() {
         this.isVisible = false;

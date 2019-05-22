@@ -13,11 +13,11 @@ export default () => new Vuex.Store({
     training: [],
     circuit: [],
     exercise: {
-      isSuperSet: false,
       title: '',
       muscleGroup: '',
       sets: []
     },
+    superSet: [],
     exerciseInProgress: '',
     date: '',
     startTime: '',
@@ -38,10 +38,13 @@ export default () => new Vuex.Store({
       state.training.push(exercise);
     },
     addSet: (state, set) => state.exercise.sets.push(set),
-    addCircuit: (state, circuit) => state.circuit.push(circuit),
+    addSuperSet: (state, superSet) => {
+      state.training.push(superSet);
+      state.superSet = superSet;
+    },
     saveExercise (state) {
       const ex = state.training.find(el => el.title === state.exerciseInProgress);
-      ex.sets = state.exercise.sets
+      ex.sets = state.exercise.sets;
       state.exercise = {
         title: '',
         muscleGroup: '',
@@ -72,10 +75,8 @@ export default () => new Vuex.Store({
     addSet ({commit}, sets) {
       commit('addSet', sets)
     },
-    addCircuit: ({commit}, circuit) => commit('addCircuit', circuit),
-    saveExercise ({commit}) {
-      commit('saveExercise')
-    },
+    addSuperSet: ({commit}, superSet) => commit('addSuperSet', superSet),
+    saveExercise: ({commit}) => commit('saveExercise'),
     saveTraining({commit}, training) {
       this.$axios.post('/create', training)
         .catch((error) => console.error(error));
@@ -116,6 +117,7 @@ export default () => new Vuex.Store({
     getExercise (state) {
       return state.exercise
     },
+    getSuperSet: state => state.superSet,
     getTrainingDetails (state) {
       return state.trainingDetails
     },
