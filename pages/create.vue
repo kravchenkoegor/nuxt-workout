@@ -15,7 +15,7 @@
         <v-flex xs12 my-4>
           <date-picker
             :isOpen="datepicker"
-            @closeDialog="saveDate"
+            @closeDialog="datepicker = false"
           />
         </v-flex>
 
@@ -211,7 +211,6 @@
                     :is-super-set="isSuperSet"
                     @closeDialog="dialog = false"
                     @addNewExercise="addNewExercise"
-                    @addNewSuperSet="addNewExercise"
                   />
                 </template>
               </v-card>
@@ -236,15 +235,13 @@
   import DatePicker from '../components/dialogLayouts/DatePicker';
   import Exercise from '../components/dialogLayouts/Exercise';
   import Set from '../components/dialogLayouts/Set';
-  import Circuit from '../components/trainingLayouts/Circuit';
 
   export default {
     name: 'Create',
     components: {
       DatePicker,
       Exercise,
-      Set,
-      Circuit
+      Set
     },
     data: () => ({
       datepicker: false,
@@ -254,13 +251,13 @@
       endMM: null,
       dialog: false,
       dialogSets: false,
+      isSuperSet: false,
+      exerciseIndex: 0,
       newExercise: {
         title: '',
         muscleGroup: '',
         sets: []
-      },
-      isSuperSet: false,
-      exerciseIndex: 0
+      }
     }),
     created() {
       if (!this.isAuth) {
@@ -268,10 +265,7 @@
       }
     },
     mounted() {
-      // if (process.browser) {
-      //   this.startHH = this.$moment(Date.now()).format('HH');
-      //   this.startMM = this.$moment(Date.now()).format('mm');
-      // }
+      // TODO время начала тренировки
     },
     computed: {
       ...mapGetters('user', ['isAuth', 'userId']),
@@ -294,8 +288,6 @@
     methods: {
       ...mapActions([
         'addExercise',
-        'saveExercise',
-        'addSuperSet',
         'addSet',
         'saveTraining'
       ]),
@@ -319,43 +311,13 @@
         }
 
         this.addExercise(payload)
-          .then(() => {
-            this.dialog = false;
-          })
-          .catch(error => console.log(error));
-      },
-      addNewSuperSet(superSet) {
-        this.addSuperSet(superSet)
-          .then(() => {
-            this.isSuperSet = false;
-            this.dialog = false;
-          })
-          .catch(error => console.log(error));
+          .then(() => this.dialog = false)
+          .catch(error => console.error(error));
       },
       addNewSet(set) {
-        // let payload;
-        // if (Array.isArray(set)) {
-        //   payload = {
-        //     exerciseIndex: this.exerciseIndex,
-        //     set
-        //   }
-        // } else {
-        //   payload = {
-        //     exerciseIndex: this.exerciseIndex,
-        //     set
-        //   };
-        // }
-
         this.addSet({exerciseIndex: this.exerciseIndex, set})
           .then(() => this.dialogSets = false)
-          .catch(error => console.log(error));
-      },
-      clear() {
-        this.newExercise = {
-          title: '',
-          muscleGroup: '',
-          sets: []
-        };
+          .catch(error => console.error(error));
       },
       saveNewTraining() {
         const [year, month, day] = this.date.split('-');
@@ -371,23 +333,16 @@
           createdBy: this.userId
         })
           .then(() => this.$router.push('/history'))
+          .catch(error => console.error(error))
       },
-      formatDate(date) {
-        if (!date) return null;
-        return this.$moment(date).format('D MMMM YYYY');
+      clear() {
+        this.newExercise = {
+          title: '',
+          muscleGroup: '',
+          sets: []
+        };
       },
-      formatDateShort(date) {
-        if (!date) return null;
-        return this.$moment(date).format('D MMMM');
-      },
-      saveDate(date) {
-        this.datepicker = false;
-
-        if (date) {
-          this.trainingDate = date;
-        }
-      }
-    },
+    }
   }
 </script>
 
@@ -542,7 +497,7 @@
 
     .superset {
       align-items: center;
-      border-bottom: 1px solid red;
+      border-bottom: 1px solid darken(#eee, 15%);
       display: flex;
       flex-direction: column;
       justify-content: center;

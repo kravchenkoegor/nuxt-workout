@@ -85,27 +85,29 @@
     }),
     methods: {
       addExercise() {
+        let payload;
+
         if (this.isSuperSet) {
-          this.$emit('addNewSuperSet', [
-              {
-                muscleGroup: this.superSetMuscleGroupOne,
-                title: this.superSetExerciseOne,
-                sets: []
-              },
-              {
-                muscleGroup: this.superSetMuscleGroupTwo,
-                title: this.superSetExerciseTwo,
-                sets: []
-              }
-            ]
-          );
+          payload = [
+            {
+              muscleGroup: this.superSetMuscleGroupOne,
+              title: this.superSetExerciseOne,
+              sets: []
+            },
+            {
+              muscleGroup: this.superSetMuscleGroupTwo,
+              title: this.superSetExerciseTwo,
+              sets: []
+            }
+          ];
         } else {
-          this.$emit('addNewExercise', {
+          payload = {
             title: this.exercise,
             muscleGroup: this.muscleGroup
-          });
+          };
         }
 
+        this.$emit('addNewExercise', payload);
         this.clear();
       },
       clear() {

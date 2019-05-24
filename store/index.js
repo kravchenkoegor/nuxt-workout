@@ -29,12 +29,8 @@ export default () => new Vuex.Store({
     },
     addSet: (state, {exerciseIndex, set}) => {
       const exercise = state.training[exerciseIndex];
-
       if (Array.isArray(set)) {
-        set.forEach((s, i) => {
-          console.log({s, i, exercise})
-          exercise.superSet[i].sets.push(s)
-        })
+        set.forEach((s, i) => exercise.superSet[i].sets.push(s));
       } else {
         exercise.sets.push(set);
       }
