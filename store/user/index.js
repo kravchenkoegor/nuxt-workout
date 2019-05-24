@@ -6,7 +6,8 @@ export const state = {
   isAuth: false,
   username: null,
   email: null,
-  createdDate: null
+  createdDate: null,
+  userId: null
 };
 
 export const user = {

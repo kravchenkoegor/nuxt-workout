@@ -19,6 +19,7 @@
                     label="Вес"
                     type="number"
                     hide-details
+                    class="mb-3"
                   ></v-text-field>
                 </v-flex>
                 <v-flex xs12>
@@ -45,7 +46,7 @@
                     hide-details
                   ></v-text-field>
                 </v-flex>
-                <v-flex xs6  class="pl-2">
+                <v-flex xs6 class="pl-2">
                   <v-text-field
                     v-model="exerciseOneRepeats"
                     label="Повторения"
@@ -108,8 +109,6 @@
       isOpen: Boolean,
       isSuperSet: Boolean,
       exerciseTitle: String | Array,
-      // exerciseOne: String,
-      // exerciseTwo: String
     },
     data: () => ({
       isVisible: false,
@@ -128,11 +127,22 @@
     },
     methods: {
       addSet() {
-        this.$emit()
+        const set = !this.isSuperSet
+          ? {weight: this.weight, repeats: this.repeats}
+          : [
+              {
+                weight: this.exerciseOneWeight,
+                repeats: this.exerciseOneRepeats,
+              },
+              {
+                weight: this.exerciseTwoWeight,
+                repeats: this.exerciseTwoRepeats,
+              }
+          ];
+        this.$emit('addSet', set);
       },
       closeDialog() {
         this.isVisible = false;
-        // this.$refs.dialog.save(this.date);
         this.$emit('closeDialog');
       }
     }

@@ -15,7 +15,7 @@
       prepend-icon="far fa-calendar-alt"
       readonly
       class="training__input training__input_date"
-      @change="$store.dispatch('setDate', computedDateFormatted)"
+      @change="setDate(computedDateFormatted)"
     ></v-text-field>
 
     <v-date-picker
@@ -48,6 +48,8 @@
 </template>
 
 <script>
+  import {mapActions} from 'vuex';
+
   export default {
     name: 'DatePicker',
     props: {
@@ -59,6 +61,7 @@
     }),
     mounted() {
       this.date = this.$moment(Date.now()).format('YYYY-MM-DD');
+      this.setDate(this.date);
     },
     computed: {
       showDialog() {
@@ -70,6 +73,7 @@
       }
     },
     methods: {
+      ...mapActions(['setDate']),
       formatDate(date) {
         if (!date) return null;
         return this.$moment(date).format('D MMMM YYYY');

@@ -20,23 +20,39 @@
             </div>
           </div>
 
-          <div class="workout__body">
-            <div class="workout__exercise shadow" v-for="(exercise, index) in training.exercises" :key="index">
-              <div class="workout__title">
-                {{ exercise.title }}
-                <span class="muscle-group">{{ exercise.muscleGroup }}</span>
-              </div>
-              <div v-if="exercise.sets.length" class="workout__sets">
-                <p v-for="(set, idx) in exercise.sets" :key="idx">
-                  <span class="exercise__repeats">{{ set.repeats }}{{ !set.weight ? '&nbsp;раз' : '' }}</span>
-                  <template v-if="set.weight">
-                    <span class="divider">&nbsp;/&nbsp;</span>
-                    <span class="exercise__weight">{{ set.weight }}</span>
-                  </template>
-                </p>
+          <template v-if="!training.isSuperSet">
+            <div class="workout__body">
+              <div
+                v-for="(exercise, index) in training.exercises"
+                :key="index"
+                class="workout__exercise shadow"
+              >
+                <div class="workout__title">
+                  {{ exercise.title }}
+                  <span class="muscle-group">
+                    {{ exercise.muscleGroup }}
+                  </span>
+                </div>
+                <div
+                  v-if="exercise.sets && exercise.sets.length"
+                  class="workout__sets"
+                >
+                  <p
+                    v-for="(set, idx) in exercise.sets"
+                    :key="idx"
+                  >
+                    <span class="exercise__repeats">
+                      {{ set.repeats }}{{ !set.weight ? '&nbsp;раз' : '' }}
+                    </span>
+                    <template v-if="set.weight">
+                      <span class="divider">&nbsp;/&nbsp;</span>
+                      <span class="exercise__weight">{{ set.weight }}</span>
+                    </template>
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          </template>
 
           <v-flex xs12 mt-4>
             <v-layout row>
@@ -74,13 +90,15 @@
 </template>
 
 <script>
+  import {mapGetters} from 'vuex';
+
   export default {
     name: 'Training',
     data: () => ({
       training: null
     }),
     created () {
-      this.training = this.$store.getters.getTrainingDetails
+      this.training = this.trainingDetails;
     },
     async fetch ({ app, store, params }) {
       try {
@@ -89,8 +107,11 @@
           store.dispatch('setTrainingDetails', result)
         }
       } catch (error) {
-        console.log(error)
+        console.error(error);
       }
+    },
+    computed: {
+      ...mapGetters(['trainingDetails'])
     },
     methods: {
       async deleteTraining () {

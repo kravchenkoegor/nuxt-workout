@@ -11,14 +11,6 @@ export default () => new Vuex.Store({
   },
   state: {
     training: [],
-    circuit: [],
-    exercise: {
-      title: '',
-      muscleGroup: '',
-      sets: []
-    },
-    superSet: [],
-    exerciseInProgress: '',
     date: '',
     startTime: '',
     endTime: '',
@@ -33,23 +25,19 @@ export default () => new Vuex.Store({
   },
   mutations: {
     addExercise (state, exercise) {
-      state.exercise = exercise;
-      state.exerciseInProgress = exercise.title;
       state.training.push(exercise);
     },
-    addSet: (state, set) => state.exercise.sets.push(set),
-    addSuperSet: (state, superSet) => {
-      state.training.push(superSet);
-      state.superSet = superSet;
-    },
-    saveExercise (state) {
-      const ex = state.training.find(el => el.title === state.exerciseInProgress);
-      ex.sets = state.exercise.sets;
-      state.exercise = {
-        title: '',
-        muscleGroup: '',
-        sets: []
-      };
+    addSet: (state, {exerciseIndex, set}) => {
+      const exercise = state.training[exerciseIndex];
+
+      if (Array.isArray(set)) {
+        set.forEach((s, i) => {
+          console.log({s, i, exercise})
+          exercise.superSet[i].sets.push(s)
+        })
+      } else {
+        exercise.sets.push(set);
+      }
     },
     setTrainingsHistory: (state, history) => state.history = history,
     setDate (state, date) {
@@ -72,11 +60,9 @@ export default () => new Vuex.Store({
     addExercise ({commit}, exercise) {
       commit('addExercise', exercise)
     },
-    addSet ({commit}, sets) {
-      commit('addSet', sets)
+    addSet ({commit}, payload) {
+      commit('addSet', payload);
     },
-    addSuperSet: ({commit}, superSet) => commit('addSuperSet', superSet),
-    saveExercise: ({commit}) => commit('saveExercise'),
     saveTraining({commit}, training) {
       this.$axios.post('/create', training)
         .catch((error) => console.error(error));
@@ -111,16 +97,10 @@ export default () => new Vuex.Store({
     }
   },
   getters: {
-    training: (state) => state.training,
-    circuit: (state) => state.circuit,
-    history: (state) => state.history,
-    getExercise (state) {
-      return state.exercise
-    },
-    getSuperSet: state => state.superSet,
-    getTrainingDetails (state) {
-      return state.trainingDetails
-    },
+    training: state => state.training,
+    history: state => state.history,
+    date: state => state.date,
+    trainingDetails: state => state.trainingDetails,
     getWeightChart (state) {
       return state.weightChart
     },

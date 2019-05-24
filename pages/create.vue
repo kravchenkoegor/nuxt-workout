@@ -75,37 +75,82 @@
           </v-flex>
         </v-layout>
 
-        <v-flex xs12 my-4 v-if="circuit.length">
-          <div v-for="(c, i) in circuit"
-               :key="i"
-               class="training__circuit"
-               :class="{'mb-4': i !== c.length - 1}"
-          >
-            <circuit :circuit="c" :index="i" />
-          </div>
-        </v-flex>
+<!--        <v-flex xs12 my-4 v-if="circuit.length">-->
+<!--          <div v-for="(c, i) in circuit"-->
+<!--               :key="i"-->
+<!--               class="training__circuit"-->
+<!--               :class="{'mb-4': i !== c.length - 1}"-->
+<!--          >-->
+<!--            <circuit :circuit="c" :index="i" />-->
+<!--          </div>-->
+<!--        </v-flex>-->
 
         <v-flex xs12 my-4 v-if="training.length">
           <v-list two-line class="training__list">
-            <v-list-tile v-for="(exercise, index) in training" :key="index" class="mb-4">
+            <v-list-tile
+              v-for="(exercise, index) in training"
+              :key="index"
+              class="mb-4"
+            >
               <v-list-tile-content>
-                <v-list-tile-title>{{ exercise.title }}</v-list-tile-title>
+                <template v-if="!exercise.isSuperSet">
+                  <v-list-tile-title>
+                    {{ exercise.title }}
+                  </v-list-tile-title>
 
-                <v-list-tile-sub-title>
-                  {{ exercise.muscleGroup }}
-                </v-list-tile-sub-title>
+                  <v-list-tile-sub-title>
+                    {{ exercise.muscleGroup }}
+                  </v-list-tile-sub-title>
 
-                <div class="exercise__sets">
-                  <p v-for="(set, idx) in exercise.sets" :key="idx">
-                    <span class="exercise__repeats">{{ set.repeats }}</span>
-                    <span class="exercise__weight">{{ set.weight }}</span>
-                  </p>
-                </div>
+                  <div class="exercise__sets">
+                    <p
+                      v-for="(set, idx) in exercise.sets"
+                      :key="idx"
+                    >
+                    <span class="exercise__repeats">
+                      {{ set.repeats }}
+                    </span>
+                      <span class="exercise__weight">
+                      {{ set.weight }}
+                    </span>
+                    </p>
+                  </div>
+                </template>
+
+                <template v-else>
+                  <div
+                    v-for="(superset, idx) in exercise.superSet"
+                    :key="idx"
+                    class="superset"
+                  >
+                    <v-list-tile-title>
+                      {{ superset.title }}
+                    </v-list-tile-title>
+
+                    <v-list-tile-sub-title>
+                      {{ superset.muscleGroup }}
+                    </v-list-tile-sub-title>
+
+                    <div class="exercise__sets">
+                      <p
+                        v-for="(set, i) in superset.sets"
+                        :key="i"
+                      >
+                    <span class="exercise__repeats">
+                      {{ set.repeats }}
+                    </span>
+                        <span class="exercise__weight">
+                      {{ set.weight }}
+                    </span>
+                      </p>
+                    </div>
+                  </div>
+                </template>
 
                 <v-btn
                   color="secondary"
                   class="exercise__add-set"
-                  @click="dialogSets = !dialogSets"
+                  @click="openDialogSet(index)"
                 >
                   <v-icon left small>fas fa-plus-circle</v-icon>
                   подход
@@ -133,7 +178,7 @@
                 color="accent"
                 dark
                 block
-                @click="saveTraining"
+                @click="saveNewTraining"
                 class="my-0 mr-0 ml-1"
               >
                 <v-icon left small>fas fa-check-circle</v-icon>
@@ -166,7 +211,7 @@
                     :is-super-set="isSuperSet"
                     @closeDialog="dialog = false"
                     @addNewExercise="addNewExercise"
-                    @addNewSuperSet="addNewSuperSet"
+                    @addNewSuperSet="addNewExercise"
                   />
                 </template>
               </v-card>
@@ -177,9 +222,9 @@
         <set
           :is-open="dialogSets"
           :is-super-set="isSuperSet"
-          :exercise-title="getCurrentExercise"
+          :exercise-title="getCurrentExercise || ''"
+          @addSet="addNewSet"
           @closeDialog="dialogSets = false"
-          @addSet="addSet"
         />
       </v-flex>
     </v-layout>
@@ -203,22 +248,19 @@
     },
     data: () => ({
       datepicker: false,
-      trainingDate: null,
       startHH: null,
       startMM: null,
       endHH: null,
       endMM: null,
       dialog: false,
       dialogSets: false,
-      exerciseTitle: null,
-      weight: null,
-      repeats: null,
       newExercise: {
         title: '',
         muscleGroup: '',
         sets: []
       },
-      isSuperSet: false
+      isSuperSet: false,
+      exerciseIndex: 0
     }),
     created() {
       if (!this.isAuth) {
@@ -232,15 +274,17 @@
       // }
     },
     computed: {
-      ...mapGetters('user', ['isAuth']),
-      ...mapGetters(['training', 'circuit', 'getExercise', 'getSuperSet']),
+      ...mapGetters('user', ['isAuth', 'userId']),
+      ...mapGetters(['training', 'date']),
       getCurrentExercise() {
-        if (!this.isSuperSet) {
-          const exercise = this.$store.getters.getExercise;
-          return exercise.title;
-        } else {
-          const superSet = this.$store.getters.getSuperSet;
-          return superSet.map(s => s.title);
+        const exercise = this.training[this.exerciseIndex];
+        if (exercise) {
+          if (!exercise.isSuperSet) {
+            return exercise.title;
+          } else {
+            const {superSet} = exercise;
+            return superSet.map(s => s.title);
+          }
         }
       },
       computedDateFormatted() {
@@ -255,25 +299,27 @@
         'addSet',
         'saveTraining'
       ]),
-      save() {
-        if (this.weight && this.repeats) {
-          this.addSet(this.weight, this.repeats);
-        }
-
-        this.saveExercise()
-          .then(() => {
-            this.clear();
-            this.dialogSets = false;
-          })
-          .catch(error => console.log(error));
+      openDialogSet(index) {
+        this.dialogSets = !this.dialogSets;
+        this.exerciseIndex = index;
       },
       addNewExercise(exercise) {
-        if (this.weight) this.weight = null;
+        let payload;
+        if (!Array.isArray(exercise)) {
+          payload = {
+            isSuperSet: this.isSuperSet,
+            ...exercise,
+            sets: []
+          }
+        } else {
+          payload = {
+            isSuperSet: this.isSuperSet,
+            superSet: [...exercise]
+          }
+        }
 
-        this.addExercise({...exercise, sets: []})
+        this.addExercise(payload)
           .then(() => {
-            this.exercise = null;
-            this.muscleGroup = null;
             this.dialog = false;
           })
           .catch(error => console.log(error));
@@ -281,51 +327,49 @@
       addNewSuperSet(superSet) {
         this.addSuperSet(superSet)
           .then(() => {
-            // this.exercise = null;
-            // this.muscleGroup = null;
+            this.isSuperSet = false;
             this.dialog = false;
           })
           .catch(error => console.log(error));
       },
-      addSet(weight, repeats) {
-        const set = {weight, repeats};
-        this.newExercise.sets.push({weight, repeats});
-        this.repeats = null;
-        this.addSet(set)
+      addNewSet(set) {
+        // let payload;
+        // if (Array.isArray(set)) {
+        //   payload = {
+        //     exerciseIndex: this.exerciseIndex,
+        //     set
+        //   }
+        // } else {
+        //   payload = {
+        //     exerciseIndex: this.exerciseIndex,
+        //     set
+        //   };
+        // }
+
+        this.addSet({exerciseIndex: this.exerciseIndex, set})
           .then(() => this.dialogSets = false)
           .catch(error => console.log(error));
       },
-      addCircuit(circuit) {
-        this.$store.dispatch('addCircuit', circuit)
-          .then(() => {
-            this.dialog = false;
-          })
-      },
       clear() {
-        this.weight = null;
-        this.repeats = null;
-        this.exercise = null;
-        this.muscleGroup = null;
         this.newExercise = {
           title: '',
           muscleGroup: '',
           sets: []
         };
       },
-      saveTraining() {
-        const [year, month, day] = this.trainingDate.split('-');
-        const newTraining = {
+      saveNewTraining() {
+        const [year, month, day] = this.date.split('-');
+
+        this.saveTraining({
           day,
           month,
           year,
-          date: this.trainingDate,
+          date: this.date,
           startTime: `${this.startHH}:${this.startMM}`,
           endTime: `${this.endHH}:${this.endMM}`,
           exercises: this.training,
-          createdBy: this.user._id
-        };
-
-        this.$store.dispatch('saveTraining', newTraining)
+          createdBy: this.userId
+        })
           .then(() => this.$router.push('/history'))
       },
       formatDate(date) {
@@ -493,6 +537,24 @@
         padding-left: 1rem;
         padding-right: 1rem;
         margin: 1rem 0 0;
+      }
+    }
+
+    .superset {
+      align-items: center;
+      border-bottom: 1px solid red;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-bottom: 16px;
+      width: 100%;
+
+      & + .superset {
+        padding-top: 16px;
+      }
+
+      &:last-of-type {
+        border-bottom: none;
       }
     }
   }

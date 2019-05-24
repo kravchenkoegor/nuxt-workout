@@ -6,6 +6,9 @@
           v-model="muscleGroup"
           :items="muscleGroups"
           label="Группа мышц"
+          dense
+          hide-details
+          class="mb-3"
         ></v-select>
 
         <v-text-field
@@ -86,11 +89,13 @@
           this.$emit('addNewSuperSet', [
               {
                 muscleGroup: this.superSetMuscleGroupOne,
-                title: this.superSetExerciseOne
+                title: this.superSetExerciseOne,
+                sets: []
               },
               {
                 muscleGroup: this.superSetMuscleGroupTwo,
-                title: this.superSetExerciseTwo
+                title: this.superSetExerciseTwo,
+                sets: []
               }
             ]
           );
@@ -100,6 +105,16 @@
             muscleGroup: this.muscleGroup
           });
         }
+
+        this.clear();
+      },
+      clear() {
+        this.muscleGroup = null;
+        this.exercise = null;
+        this.superSetMuscleGroupOne = null;
+        this.superSetExerciseOne = null;
+        this.superSetMuscleGroupTwo = null;
+        this.superSetExerciseTwo = null;
       }
     }
   }
