@@ -10,6 +10,7 @@ export default () => new Vuex.Store({
     user,
   },
   state: {
+    loading: true,
     training: [],
     date: '',
     startTime: '',
@@ -24,6 +25,9 @@ export default () => new Vuex.Store({
     weightChart: []
   },
   mutations: {
+    setLoading (state, loading) {
+      state.loading = loading
+    },
     addExercise (state, exercise) {
       state.training.push(exercise);
     },
@@ -53,8 +57,11 @@ export default () => new Vuex.Store({
     }
   },
   actions: {
+    setLoading ({commit}, loading) {
+      commit('setLoading', loading);
+    },
     addExercise ({commit}, exercise) {
-      commit('addExercise', exercise)
+      commit('addExercise', exercise);
     },
     addSet ({commit}, payload) {
       commit('addSet', payload);
@@ -93,12 +100,10 @@ export default () => new Vuex.Store({
     }
   },
   getters: {
+    loading: state => state.loading,
     training: state => state.training,
     history: state => state.history,
     date: state => state.date,
-    trainingDetails: state => state.trainingDetails,
-    getWeightChart (state) {
-      return state.weightChart
-    },
+    trainingDetails: state => state.trainingDetails
   }
 });

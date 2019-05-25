@@ -15,7 +15,7 @@
         <v-flex xs12 my-4>
           <date-picker
             :isOpen="datepicker"
-            @closeDialog="datepicker = false"
+            @closeDialog="saveDate"
           />
         </v-flex>
 
@@ -289,7 +289,8 @@
       ...mapActions([
         'addExercise',
         'addSet',
-        'saveTraining'
+        'saveTraining',
+        'setDate'
       ]),
       openDialogSet(index) {
         this.dialogSets = !this.dialogSets;
@@ -334,6 +335,10 @@
         })
           .then(() => this.$router.push('/history'))
           .catch(error => console.error(error))
+      },
+      saveDate(date) {
+        this.setDate(date);
+        this.datepicker = false;
       },
       clear() {
         this.newExercise = {

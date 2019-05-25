@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const mongooseOptions = {
   keepAlive: 300000,
   connectTimeoutMS: 30000,
-  useNewUrlParser: true
+  useNewUrlParser: true,
+  useFindAndModify: false
 };
 require('./models/user.model');
 

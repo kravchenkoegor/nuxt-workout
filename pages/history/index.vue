@@ -12,37 +12,55 @@
           <h2>Журнал тренировок</h2>
         </v-flex>
 
-        <template v-if="getFormattedMonths.length">
+        <template v-if="loading">
           <v-flex
             xs12
-            v-for="(item, index) in getFormattedMonths"
-            :key="index"
-            :class="{
-            'mb-3': index !== getFormattedMonths.length - 1,
-            'mb-4': index === getFormattedMonths.length - 1
-          }"
+            d-flex
+            align-center
+            justify-center
+            style="margin-top: 100px;"
           >
-            <nuxt-link
-              :to="{ name: 'history-id', params: { id: `${item.year}-${formatMonth(item.month)}` } }"
-              class="history__item elevation-4"
-            >
-              <div class="history__item-date">{{ item.month }} {{ item.year }}</div>
-              <i class="fas fa-check-circle"></i>
-            </nuxt-link>
+            <v-progress-circular
+              indeterminate
+              color="primary"
+              :size="56"
+              :width="5"
+            />
           </v-flex>
         </template>
 
         <template v-else>
-          <v-layout row justify-center align-center class="history__empty">
-            <v-flex xs12 text-xs-center>
-              <p>У Вас еще нет тренировок.</p>
-              <v-btn color="primary" nuxt to="/add" exact>
-                <v-icon left small>fas fa-plus-circle</v-icon>
-                Добавить
-              </v-btn>
+          <template v-if="getFormattedMonths.length">
+            <v-flex
+              xs12
+              v-for="(item, index) in getFormattedMonths"
+              :key="index"
+              :class="{
+            'mb-3': index !== getFormattedMonths.length - 1,
+            'mb-4': index === getFormattedMonths.length - 1
+          }"
+            >
+              <nuxt-link
+                :to="{ name: 'history-id', params: { id: `${item.year}-${formatMonth(item.month)}` } }"
+                class="history__item elevation-4"
+              >
+                <div class="history__item-date">{{ item.month }} {{ item.year }}</div>
+                <i class="fas fa-check-circle"></i>
+              </nuxt-link>
             </v-flex>
-          </v-layout>
+          </template>
 
+          <template v-else>
+            <v-layout row justify-center align-center class="history__empty">
+              <v-flex xs12 text-xs-center>
+                <p>У Вас еще нет тренировок.</p>
+                <v-btn color="primary" nuxt to="/add" exact>
+                  <v-icon left small>fas fa-plus-circle</v-icon>
+                  Добавить
+                </v-btn>
+              </v-flex>
+            </v-layout>
+          </template>
         </template>
       </v-flex>
     </v-layout>
@@ -50,20 +68,32 @@
 </template>
 
 <script>
-  import {mapGetters} from 'vuex';
+  import {mapGetters, mapActions} from 'vuex';
 
   export default {
     name: 'History',
     data: () => ({
       dates: []
     }),
-    created() {
-      if (!this.isAuth) this.$router.push('/login')
-      else this.$store.dispatch('fetchTrainingsHistory', this.userId);
+    mounted() {
+      // if (this.isAuth) {
+        console.log('1', this.loading)
+        // this.setLoading(true)
+          // .then(() => {
+            this.fetchTrainingsHistory(this.userId)
+            // console.log('2', this.loading)
+          // })
+          .then(() => {
+            this.setLoading(false)
+          })
+          .catch(error => console.error(error));
+      // } else {
+      //   this.$router.push('/login');
+      // }
     },
     computed: {
       ...mapGetters('user', ['isAuth', 'userId']),
-      ...mapGetters(['history']),
+      ...mapGetters(['history', 'loading']),
       getFormattedMonths() {
         return this.dates.map(item => {
           return {
@@ -79,6 +109,7 @@
       }
     },
     methods: {
+      ...mapActions(['setLoading', 'fetchTrainingsHistory']),
       getTrainingMonths() {
         this.history.forEach(training => {
           const {month, year} = training;
