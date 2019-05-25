@@ -104,15 +104,12 @@
       ...mapActions('history', ['fetchTrainings']),
       ...mapActions(['setLoading']),
       getTrainingMonths() {
-        console.log(this.trainings)
         for (let i = 0; i < this.trainings.length; i++) {
           const training = this.trainings[i];
           const {month, year} = training;
           const dateExists = this.dates.some(el => {
             return el.month === month && el.year === year;
           });
-
-          console.log({dateExists})
 
           if (!dateExists) {
             this.dates.push({month, year});
