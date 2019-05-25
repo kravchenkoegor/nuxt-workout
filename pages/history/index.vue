@@ -76,24 +76,16 @@
       dates: []
     }),
     mounted() {
-      // if (this.isAuth) {
-        console.log('1', this.loading)
-        // this.setLoading(true)
-          // .then(() => {
-            this.fetchTrainingsHistory(this.userId)
-            // console.log('2', this.loading)
-          // })
-          .then(() => {
-            this.setLoading(false)
-          })
-          .catch(error => console.error(error));
-      // } else {
-      //   this.$router.push('/login');
-      // }
+      this.fetchTrainings(this.userId)
+        .then(() => this.setLoading(false))
+        .catch(error => console.error(error));
+
+      this.getTrainingMonths()
     },
     computed: {
       ...mapGetters('user', ['isAuth', 'userId']),
-      ...mapGetters(['history', 'loading']),
+      ...mapGetters('history', ['trainings']),
+      ...mapGetters(['loading']),
       getFormattedMonths() {
         return this.dates.map(item => {
           return {
@@ -104,19 +96,28 @@
       }
     },
     watch: {
-      history() {
+      trainings() {
         this.getTrainingMonths();
       }
     },
     methods: {
-      ...mapActions(['setLoading', 'fetchTrainingsHistory']),
+      ...mapActions('history', ['fetchTrainings']),
+      ...mapActions(['setLoading']),
       getTrainingMonths() {
-        this.history.forEach(training => {
+        console.log(this.trainings)
+        for (let i = 0; i < this.trainings.length; i++) {
+          const training = this.trainings[i];
           const {month, year} = training;
-          if (!this.dates.some(el => el.month === month && el.year === year)) {
+          const dateExists = this.dates.some(el => {
+            return el.month === month && el.year === year;
+          });
+
+          console.log({dateExists})
+
+          if (!dateExists) {
             this.dates.push({month, year});
           }
-        })
+        }
       },
       formatMonth(month) {
         return this.$moment().month(month).format('MM');

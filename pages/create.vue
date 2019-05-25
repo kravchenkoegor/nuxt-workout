@@ -42,6 +42,7 @@
                   type="number"
                   class="training__input training__input_time"
                   mask="##"
+                  @change="setStartTime(`${startHH}:${startMM}`)"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -69,6 +70,7 @@
                   type="number"
                   class="training__input training__input_time"
                   mask="##"
+                  @change="setEndTime(`${endHH}:${endMM}`)"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -85,10 +87,10 @@
 <!--          </div>-->
 <!--        </v-flex>-->
 
-        <v-flex xs12 my-4 v-if="training.length">
+        <v-flex xs12 my-4 v-if="exercises.length">
           <v-list two-line class="training__list">
             <v-list-tile
-              v-for="(exercise, index) in training"
+              v-for="(exercise, index) in exercises"
               :key="index"
               class="mb-4"
             >
@@ -269,9 +271,14 @@
     },
     computed: {
       ...mapGetters('user', ['isAuth', 'userId']),
-      ...mapGetters(['training', 'date']),
+      ...mapGetters('training', [
+        'exercises',
+        'date',
+        'startTime',
+        'endTime'
+      ]),
       getCurrentExercise() {
-        const exercise = this.training[this.exerciseIndex];
+        const exercise = this.exercises[this.exerciseIndex];
         if (exercise) {
           if (!exercise.isSuperSet) {
             return exercise.title;
@@ -286,11 +293,14 @@
       }
     },
     methods: {
-      ...mapActions([
+      ...mapActions('training', [
+        'setDate',
+        'setStartTime',
+        'setEndTime',
         'addExercise',
         'addSet',
         'saveTraining',
-        'setDate'
+        'clearTraining'
       ]),
       openDialogSet(index) {
         this.dialogSets = !this.dialogSets;
@@ -328,11 +338,12 @@
           month,
           year,
           date: this.date,
-          startTime: `${this.startHH}:${this.startMM}`,
-          endTime: `${this.endHH}:${this.endMM}`,
-          exercises: this.training,
+          startTime: this.startTime,
+          endTime: this.endTime,
+          exercises: this.exercises,
           createdBy: this.userId
         })
+          .then(() => this.clearTraining())
           .then(() => this.$router.push('/history'))
           .catch(error => console.error(error))
       },

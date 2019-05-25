@@ -3,14 +3,13 @@ import {actions} from './actions';
 import {mutations} from './mutations';
 
 export const state = () => ({
-  isAuth: false,
-  username: null,
-  email: null,
-  createdDate: null,
-  userId: null
+  exercises: [],
+  date: null,
+  startTime: null,
+  endTime: null
 });
 
-export const user = {
+export const training = {
   namespaced: true,
   state,
   mutations,

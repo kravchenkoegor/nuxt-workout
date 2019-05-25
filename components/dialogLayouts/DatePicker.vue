@@ -73,7 +73,7 @@
       }
     },
     methods: {
-      ...mapActions(['setDate']),
+      ...mapActions('training', ['setDate']),
       formatDate(date) {
         if (!date) return null;
         return this.$moment(date).format('D MMMM YYYY');
