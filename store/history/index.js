@@ -4,7 +4,7 @@ import {mutations} from './mutations';
 
 export const state = () => ({
   trainings: [],
-  trainingDetails: {
+  details: {
     date: null,
     startTime: null,
     endTime: null,

@@ -14,7 +14,7 @@
 
         <v-flex
           xs12
-          v-for="(training, index) in trainings"
+          v-for="(training, index) in getTrainings"
           :key="index"
           :class="{
             'mb-3': index !== trainings.length - 1,
@@ -48,8 +48,6 @@
       if (!this.isAuth) {
         this.$router.push('/');
       }
-
-      this.fetchTrainingsByMonth(this.$route.params.id);
     },
     methods: {
       ...mapActions('history', ['fetchTrainingsByMonth']),
@@ -69,6 +67,25 @@
         let [year, month] = this.$route.params.id.split('-');
         month = this.$moment().month(Number(month) - 1).format('MMMM');
         return `${this.capitalizeFirstLetter(month)} ${year}`;
+      },
+      getTrainings() {
+        const [year, month] = this.$route.params.id.split('-');
+        return this.trainings
+          .filter(training => {
+            return training.year === year
+              && training.month === month
+          })
+          .sort((a, b) => {
+            if (a.day > b.day) {
+              return 1;
+            }
+
+            if (a.day < b.day) {
+              return -1;
+            }
+
+            return 0;
+        });
       }
     }
   }

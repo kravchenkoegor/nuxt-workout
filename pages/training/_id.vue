@@ -5,7 +5,7 @@
         <div class="workout">
           <div class="workout__header">
             <div class="back back-0">
-              <v-btn icon nuxt to="/add" exact>
+              <v-btn icon @click="$router.go(-1)">
                 <v-icon>fas fa-chevron-left</v-icon>
               </v-btn>
             </div>
@@ -132,34 +132,39 @@
 </template>
 
 <script>
-  import {mapGetters} from 'vuex';
+  import {mapGetters, mapActions} from 'vuex';
 
   export default {
     name: 'Training',
     data: () => ({
       training: null
     }),
-    created () {
-      this.training = this.trainingDetails;
+    created() {
+      this.training = this.details;
     },
-    async fetch ({ app, store, params }) {
+    async fetch({app, store, params}) {
       try {
-        let result = await app.$axios.$get('/training/' + params.id)
+        const result = await app.$axios.$get('/training/' + params.id);
         if (result) {
-          store.dispatch('setTrainingDetails', result)
+          store.dispatch('history/setTrainingDetails', result);
         }
       } catch (error) {
         console.error(error);
       }
     },
     computed: {
-      ...mapGetters(['trainingDetails'])
+      ...mapGetters('history', ['details']),
+      ...mapGetters('user', ['userId'])
     },
     methods: {
-      async deleteTraining () {
-        const result = await this.$axios.$get('/delete/' + this.$route.params.id)
-        if (result) {
-          this.$router.push({ name: 'history' })
+      ...mapActions('history', ['fetchTrainings']),
+      async deleteTraining() {
+        try {
+          await this.$axios.$get('/delete/' + this.$route.params.id);
+          await this.fetchTrainings(this.userId);
+          this.$router.push({name: 'history'});
+        } catch (error) {
+          console.error(error);
         }
       },
       getFormattedTrainingDate(date) {
@@ -211,7 +216,7 @@
       padding: .5rem 75px .5rem 0;
 
       span {
-        &.muscle-group{
+        &.muscle-group {
           position: absolute;
           top: 7px;
           right: 0;
@@ -284,6 +289,7 @@
             }
 
             &:only-child {
+              line-height: 42px;
               margin: 0;
               max-width: none;
               text-align: center;

@@ -76,11 +76,13 @@
       dates: []
     }),
     mounted() {
-      this.fetchTrainings(this.userId)
-        .then(() => this.setLoading(false))
-        .catch(error => console.error(error));
+      if (!this.trainings.length) {
+        this.fetchTrainings(this.userId)
+          .then(() => this.setLoading(false))
+          .catch(error => console.error(error));
+      }
 
-      this.getTrainingMonths()
+      this.getTrainingMonths();
     },
     computed: {
       ...mapGetters('user', ['isAuth', 'userId']),

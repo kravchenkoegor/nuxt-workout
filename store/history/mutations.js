@@ -3,6 +3,6 @@ export const mutations = {
     state.trainings = history;
   },
   setTrainingDetails(state, data) {
-    state.trainingDetails = data;
+    state.details = data;
   }
 }

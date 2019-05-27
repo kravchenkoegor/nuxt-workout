@@ -3,7 +3,7 @@
     <v-layout row wrap>
       <v-flex xs12>
         <v-flex xs12 class="back">
-          <v-btn icon nuxt to="/add" exact>
+          <v-btn icon nuxt to="/" exact>
             <v-icon>fas fa-chevron-left</v-icon>
           </v-btn>
         </v-flex>
@@ -267,7 +267,8 @@
       }
     },
     mounted() {
-      // TODO время начала тренировки
+      this.startHH = this.$moment().format('HH');
+      this.startMM = this.$moment().format('mm');
     },
     computed: {
       ...mapGetters('user', ['isAuth', 'userId']),
