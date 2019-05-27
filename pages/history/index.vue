@@ -12,37 +12,55 @@
           <h2>Журнал тренировок</h2>
         </v-flex>
 
-        <template v-if="getFormattedMonths.length">
+        <template v-if="loading">
           <v-flex
             xs12
-            v-for="(item, index) in getFormattedMonths"
-            :key="index"
-            :class="{
-            'mb-3': index !== getFormattedMonths.length - 1,
-            'mb-4': index === getFormattedMonths.length - 1
-          }"
+            d-flex
+            align-center
+            justify-center
+            style="margin-top: 100px;"
           >
-            <nuxt-link
-              :to="{ name: 'history-id', params: { id: `${item.year}-${formatMonth(item.month)}` } }"
-              class="history__item elevation-4"
-            >
-              <div class="history__item-date">{{ item.month }} {{ item.year }}</div>
-              <i class="fas fa-check-circle"></i>
-            </nuxt-link>
+            <v-progress-circular
+              indeterminate
+              color="primary"
+              :size="56"
+              :width="5"
+            />
           </v-flex>
         </template>
 
         <template v-else>
-          <v-layout row justify-center align-center class="history__empty">
-            <v-flex xs12 text-xs-center>
-              <p>У Вас еще нет тренировок.</p>
-              <v-btn color="primary" nuxt to="/add" exact>
-                <v-icon left small>fas fa-plus-circle</v-icon>
-                Добавить
-              </v-btn>
+          <template v-if="getFormattedMonths.length">
+            <v-flex
+              xs12
+              v-for="(item, index) in getFormattedMonths"
+              :key="index"
+              :class="{
+            'mb-3': index !== getFormattedMonths.length - 1,
+            'mb-4': index === getFormattedMonths.length - 1
+          }"
+            >
+              <nuxt-link
+                :to="{ name: 'history-id', params: { id: `${item.year}-${formatMonth(item.month)}` } }"
+                class="history__item elevation-4"
+              >
+                <div class="history__item-date">{{ item.month }} {{ item.year }}</div>
+                <i class="fas fa-check-circle"></i>
+              </nuxt-link>
             </v-flex>
-          </v-layout>
+          </template>
 
+          <template v-else>
+            <v-layout row justify-center align-center class="history__empty">
+              <v-flex xs12 text-xs-center>
+                <p>У Вас еще нет тренировок.</p>
+                <v-btn color="primary" nuxt to="/add" exact>
+                  <v-icon left small>fas fa-plus-circle</v-icon>
+                  Добавить
+                </v-btn>
+              </v-flex>
+            </v-layout>
+          </template>
         </template>
       </v-flex>
     </v-layout>
@@ -50,19 +68,26 @@
 </template>
 
 <script>
-  import {mapGetters} from 'vuex';
+  import {mapGetters, mapActions} from 'vuex';
 
   export default {
     name: 'History',
     data: () => ({
       dates: []
     }),
-    created() {
-      if (!this.user) this.$router.push('/login')
-      else this.$store.dispatch('fetchTrainingsHistory', this.user._id);
+    mounted() {
+      if (!this.trainings.length) {
+        this.fetchTrainings(this.userId)
+          .then(() => this.setLoading(false))
+          .catch(error => console.error(error));
+      }
+
+      this.getTrainingMonths();
     },
     computed: {
-      ...mapGetters(['user', 'history']),
+      ...mapGetters('user', ['isAuth', 'userId']),
+      ...mapGetters('history', ['trainings']),
+      ...mapGetters(['loading']),
       getFormattedMonths() {
         return this.dates.map(item => {
           return {
@@ -73,18 +98,25 @@
       }
     },
     watch: {
-      history() {
+      trainings() {
         this.getTrainingMonths();
       }
     },
     methods: {
+      ...mapActions('history', ['fetchTrainings']),
+      ...mapActions(['setLoading']),
       getTrainingMonths() {
-        this.history.forEach(training => {
+        for (let i = 0; i < this.trainings.length; i++) {
+          const training = this.trainings[i];
           const {month, year} = training;
-          if (!this.dates.some(el => el.month === month && el.year === year)) {
+          const dateExists = this.dates.some(el => {
+            return el.month === month && el.year === year;
+          });
+
+          if (!dateExists) {
             this.dates.push({month, year});
           }
-        })
+        }
       },
       formatMonth(month) {
         return this.$moment().month(month).format('MM');

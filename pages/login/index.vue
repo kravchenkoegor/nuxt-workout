@@ -49,6 +49,8 @@
 </template>
 
 <script>
+  import {mapActions} from 'vuex';
+
   export default {
     name: 'Login',
     data: () => ({
@@ -64,20 +66,28 @@
         password => password.length >= 6 || 'Пароль не может быть короче 6 символов'
       ],
     }),
+    created() {
+      if (process.browser) {
+        const token = localStorage.getItem('workout-token');
+        const userId = localStorage.getItem('workout-userId');
+
+        if (token && userId) {
+          this.authUserById(userId);
+        }
+      }
+    },
     methods: {
+      ...mapActions('user', ['authUserById', 'loginUser']),
       onSubmit() {
-        // if (this.$refs.form.validate()) {
-          this.$store.dispatch('loginUser', {
+        if (this.$refs.form.validate()) {
+          this.loginUser({
             username: this.username,
             password: this.password
           })
             .then(() => this.$router.push('/'))
-            .catch(error => console.error(error))
-        // }
+            .catch(error => console.error(error));
+        }
       }
-    },
-    created() {
-      // console.log(process.env.VUE_APP_API_URL)
     }
   }
 </script>

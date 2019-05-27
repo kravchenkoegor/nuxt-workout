@@ -5,7 +5,7 @@
         <div class="workout">
           <div class="workout__header">
             <div class="back back-0">
-              <v-btn icon nuxt to="/add" exact>
+              <v-btn icon @click="$router.go(-1)">
                 <v-icon>fas fa-chevron-left</v-icon>
               </v-btn>
             </div>
@@ -21,20 +21,78 @@
           </div>
 
           <div class="workout__body">
-            <div class="workout__exercise shadow" v-for="(exercise, index) in training.exercises" :key="index">
-              <div class="workout__title">
-                {{ exercise.title }}
-                <span class="muscle-group">{{ exercise.muscleGroup }}</span>
-              </div>
-              <div v-if="exercise.sets.length" class="workout__sets">
-                <p v-for="(set, idx) in exercise.sets" :key="idx">
-                  <span class="exercise__repeats">{{ set.repeats }}{{ !set.weight ? '&nbsp;раз' : '' }}</span>
-                  <template v-if="set.weight">
-                    <span class="divider">&nbsp;/&nbsp;</span>
-                    <span class="exercise__weight">{{ set.weight }}</span>
-                  </template>
-                </p>
-              </div>
+            <div
+              v-for="(exercise, index) in training.exercises"
+              :key="index"
+              class="workout__exercise shadow"
+            >
+              <template v-if="isSuperSet(exercise)">
+                <span class="workout__badge">
+                  Суперсет
+                </span>
+
+                <div
+                  v-for="(ex, idx) in exercise.superSet"
+                  :key="idx"
+                  class="workout__superset"
+                >
+                  <div class="workout__title">
+                    {{ ex.title }}
+                    <span class="muscle-group">
+                      {{ ex.muscleGroup }}
+                    </span>
+                  </div>
+
+                  <div
+                    v-if="ex.sets && ex.sets.length"
+                    class="workout__sets"
+                  >
+                    <p
+                      v-for="(s, i) in ex.sets"
+                      :key="i"
+                    >
+                      <template v-if="s.weight">
+                        <span class="exercise__weight">
+                          {{ s.weight }}
+                        </span>
+                      </template>
+                      <span class="exercise__repeats">
+                        {{ s.repeats }}
+                        {{ !s.weight ? '&nbsp;раз' : '' }}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </template>
+
+              <template v-else>
+                <div class="workout__title">
+                  {{ exercise.title }}
+                  <span class="muscle-group">
+                    {{ exercise.muscleGroup }}
+                  </span>
+                </div>
+
+                <div
+                  v-if="exercise.sets && exercise.sets.length"
+                  class="workout__sets"
+                >
+                  <p
+                    v-for="(set, idx) in exercise.sets"
+                    :key="idx"
+                  >
+                    <template v-if="set.weight">
+                      <span class="exercise__weight">
+                        {{ set.weight }}
+                      </span>
+                    </template>
+                    <span class="exercise__repeats">
+                      {{ set.repeats }}
+                      {{ !set.weight ? '&nbsp;раз' : '' }}
+                    </span>
+                  </p>
+                </div>
+              </template>
             </div>
           </div>
 
@@ -74,33 +132,46 @@
 </template>
 
 <script>
+  import {mapGetters, mapActions} from 'vuex';
+
   export default {
     name: 'Training',
     data: () => ({
       training: null
     }),
-    created () {
-      this.training = this.$store.getters.getTrainingDetails
+    created() {
+      this.training = this.details;
     },
-    async fetch ({ app, store, params }) {
+    async fetch({app, store, params}) {
       try {
-        let result = await app.$axios.$get('/training/' + params.id)
+        const result = await app.$axios.$get('/training/' + params.id);
         if (result) {
-          store.dispatch('setTrainingDetails', result)
+          store.dispatch('history/setTrainingDetails', result);
         }
       } catch (error) {
-        console.log(error)
+        console.error(error);
       }
     },
+    computed: {
+      ...mapGetters('history', ['details']),
+      ...mapGetters('user', ['userId'])
+    },
     methods: {
-      async deleteTraining () {
-        const result = await this.$axios.$get('/delete/' + this.$route.params.id)
-        if (result) {
-          this.$router.push({ name: 'history' })
+      ...mapActions('history', ['fetchTrainings']),
+      async deleteTraining() {
+        try {
+          await this.$axios.$get('/delete/' + this.$route.params.id);
+          await this.fetchTrainings(this.userId);
+          this.$router.push({name: 'history'});
+        } catch (error) {
+          console.error(error);
         }
       },
       getFormattedTrainingDate(date) {
         return this.$moment(date).format('DD MMMM');
+      },
+      isSuperSet(exercise) {
+        return exercise.isSuperSet
       }
     }
   }
@@ -126,6 +197,15 @@
       }
     }
 
+    &__badge {
+      padding: .25rem .5rem;
+      color: #ffffff;
+      background-color: #30c670;
+      border-radius: .25rem;
+      font-size: 14px;
+      line-height: 20px;
+    }
+
     &__title {
       display: block;
       width: 100%;
@@ -133,7 +213,7 @@
       font-weight: 700;
       line-height: 25px !important;
       position: relative;
-      padding: .5rem 50px .75rem 0;
+      padding: .5rem 75px .5rem 0;
 
       span {
         &.muscle-group {
@@ -157,11 +237,13 @@
       padding-top: .75rem;
 
       p {
-        margin-bottom: 0;
-        position: relative;
-        width: 100%;
         flex-grow: 1;
+        font-size: 14px;
+        margin-bottom: 0;
+        padding: 0 10px;
+        position: relative;
         text-align: center;
+        width: 100%;
 
         & + p {
 
@@ -173,8 +255,58 @@
             left: 0;
             bottom: 0;
             width: 1px;
-            background-color: #cccccc;
+            background-color: #ddd;
           }
+        }
+
+        span {
+          display: block;
+          position: relative;
+
+          &.exercise__weight,
+          &.exercise__repeats {
+            margin: 0 auto;
+            max-width: 40px;
+          }
+
+          &.exercise__weight {
+            text-align: left;
+          }
+
+          &.exercise__repeats {
+            text-align: right;
+
+            &:after {
+              content: '';
+              background: #888888;
+              display: block;
+              height: 1px;
+              left: 0;
+              top: 0;
+              position: absolute;
+              transform: rotate(-45deg);
+              width: 100%;
+            }
+
+            &:only-child {
+              line-height: 42px;
+              margin: 0;
+              max-width: none;
+              text-align: center;
+
+              &:after {
+                display: none;
+              }
+            }
+          }
+
+          /*&:only-child {*/
+          /*  text-align: center;*/
+
+          /*  &:after {*/
+          /*    display: none;*/
+          /*  }*/
+          /*}*/
         }
       }
 
@@ -184,6 +316,12 @@
 
       &__weight {
         padding-left: .25rem;
+      }
+    }
+
+    &__superset {
+      & + & {
+        margin-top: 16px;
       }
     }
   }

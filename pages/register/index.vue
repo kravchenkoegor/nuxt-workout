@@ -61,6 +61,8 @@
 </template>
 
 <script>
+  import {mapActions} from 'vuex';
+
   export default {
     name: 'Register',
     data: () => ({
@@ -89,9 +91,10 @@
       }
     },
     methods: {
+      ...mapActions(['registerUser']),
       onSubmit() {
         if (this.$refs.form.validate()) {
-          this.$store.dispatch('registerUser', {
+          this.registerUser({
             username: this.username,
             email: this.email,
             password: this.password
@@ -103,7 +106,3 @@
     }
   }
 </script>
-
-<style lang="scss" scoped>
-
-</style>

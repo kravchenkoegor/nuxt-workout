@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="user">
+  <v-container v-if="isAuth">
     <v-layout row wrap>
       <v-flex
         v-for="(card, index) in cards"
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-  import {mapGetters} from 'vuex';
+  import {mapGetters, mapActions} from 'vuex';
 
   export default {
     name: 'Home',
@@ -34,25 +34,26 @@
       cards: [
         // {title: 'График веса', image: '/images/weight-chart.jpg', link: '/weight'},
         {title: 'Журнал тренировок', image: '/images/history.jpg', link: '/history'},
-        {title: 'Добавить тренировку', image: '/images/create.jpg', link: '/add'}
+        {title: 'Добавить тренировку', image: '/images/create.jpg', link: '/create'}
       ]
     }),
     created() {
-      if (!this.user) {
-        if (process.browser) {
-          const token = localStorage.getItem('workout-token');
-          const userId = localStorage.getItem('workout-userId');
+      if (process.browser) {
+        const token = localStorage.getItem('workout-token');
+        const userId = localStorage.getItem('workout-userId');
 
-          if (token && userId) {
-            return this.$store.dispatch('authUserById', userId);
-          } else {
-            this.$router.push('/login');
-          }
+        if (token && userId) {
+          this.authUserById(userId);
+        } else {
+          this.$router.push('/login');
         }
       }
     },
     computed: {
-      ...mapGetters(['user'])
+      ...mapGetters('user', ['isAuth'])
+    },
+    methods: {
+      ...mapActions('user', ['authUserById'])
     }
   }
 </script>
