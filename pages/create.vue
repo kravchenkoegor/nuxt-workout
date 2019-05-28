@@ -269,6 +269,7 @@
     mounted() {
       this.startHH = this.$moment().format('HH');
       this.startMM = this.$moment().format('mm');
+      this.setStartTime(`${this.startHH}:${this.startMM}`);
     },
     computed: {
       ...mapGetters('user', ['isAuth', 'userId']),
@@ -303,6 +304,7 @@
         'saveTraining',
         'clearTraining'
       ]),
+      ...mapActions('history', ['fetchTrainings']),
       openDialogSet(index) {
         this.dialogSets = !this.dialogSets;
         this.exerciseIndex = index;
@@ -345,6 +347,7 @@
           createdBy: this.userId
         })
           .then(() => this.clearTraining())
+          .then(() => this.fetchTrainings(this.userId))
           .then(() => this.$router.push('/history'))
           .catch(error => console.error(error))
       },
