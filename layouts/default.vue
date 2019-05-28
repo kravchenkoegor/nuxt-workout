@@ -4,7 +4,9 @@
       <v-toolbar color="primary" dark>
         <template v-if="isAuth">
           <v-icon>fas fa-user</v-icon>
-          <h3 class="ml-3 mt-1 text-uppercase">{{ username }}</h3>
+          <h3 class="ml-3 mt-1 text-uppercase">
+            {{ username }}
+          </h3>
         </template>
 
         <template v-else>
@@ -32,7 +34,9 @@
         <template v-if="isAuth">
           <v-list-tile @click="logout">
             <v-list-tile-action>
-              <v-icon color="primary">fas fa-sign-out-alt</v-icon>
+              <v-icon color="primary">
+                fas fa-sign-out-alt
+              </v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
               <v-list-tile-title @click="logout">
@@ -45,17 +49,19 @@
     </v-navigation-drawer>
 
     <v-toolbar color="primary" dark fixed app>
-      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-      <v-toolbar-title @click="$router.push('/')">Nuxt Workout</v-toolbar-title>
+      <v-toolbar-side-icon
+        @click.stop="drawer = !drawer"
+      />
+      <v-toolbar-title
+        @click="$router.push('/')"
+      >
+        Nuxt Workout
+      </v-toolbar-title>
     </v-toolbar>
 
     <v-content>
       <nuxt />
     </v-content>
-
-    <v-footer color="primary" class="px-3">
-      <span class="white--text">&copy; 2018 - {{new Date().getFullYear()}}</span>
-    </v-footer>
   </v-app>
 </template>
 

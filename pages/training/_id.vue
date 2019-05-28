@@ -97,33 +97,18 @@
           </div>
 
           <v-flex xs12 mt-4>
-            <v-layout row>
-              <v-flex xs6 mr-1>
-                <v-btn
-                  nuxt
-                  block
-                  color="primary"
-                  to="/history"
-                  class="ma-0"
-                >
-                  <v-icon left small>fas fa-list-ul</v-icon>
-                  Журнал
-                </v-btn>
-              </v-flex>
-
-              <v-flex xs6 ml-1>
-                <v-btn
-                  color="error"
-                  dark
-                  block
-                  @click="deleteTraining"
-                  class="ma-0"
-                >
-                  <v-icon left small>fas fa-trash-alt</v-icon>
-                  Удалить
-                </v-btn>
-              </v-flex>
-            </v-layout>
+            <v-btn
+              color="error"
+              dark
+              absolute
+              bottom
+              right
+              fab
+              small
+              @click="deleteTraining"
+            >
+              <v-icon>fas fa-trash-alt</v-icon>
+            </v-btn>
           </v-flex>
         </div>
       </v-flex>
@@ -233,7 +218,7 @@
     &__sets {
       display: flex;
       justify-content: space-between;
-      border-top: 1px solid rgba(#1a1a1a, .4);
+      border-top: 1px solid #ddd;
       padding-top: .75rem;
 
       p {

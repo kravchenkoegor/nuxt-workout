@@ -163,31 +163,29 @@
         </v-flex>
 
         <v-flex xs12 mt-4>
-          <v-layout row>
-            <v-flex xs6>
-              <v-btn
-                color="primary"
-                @click="dialog = !dialog"
-                class="my-0 ml-0 mr-1"
-              >
-                <v-icon left small>fas fa-plus-circle</v-icon>
-                упражнение
-              </v-btn>
-            </v-flex>
+          <v-btn
+            color="accent"
+            dark
+            block
+            @click="saveNewTraining"
+            style="max-width: 220px; margin: 0 auto;"
+          >
+            <v-icon left small>fas fa-check-circle</v-icon>
+            Сохранить
+          </v-btn>
 
-            <v-flex xs6>
-              <v-btn
-                color="accent"
-                dark
-                block
-                @click="saveNewTraining"
-                class="my-0 mr-0 ml-1"
-              >
-                <v-icon left small>fas fa-check-circle</v-icon>
-                Сохранить
-              </v-btn>
-            </v-flex>
-          </v-layout>
+          <v-btn
+            color="primary"
+            dark
+            absolute
+            bottom
+            right
+            fab
+            nuxt
+            to="/add/exercise"
+          >
+            <v-icon>add</v-icon>
+          </v-btn>
         </v-flex>
 
         <v-dialog v-model="dialog">
