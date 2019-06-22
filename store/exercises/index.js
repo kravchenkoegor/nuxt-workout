@@ -3,13 +3,11 @@ import {actions} from './actions';
 import {mutations} from './mutations';
 
 export const state = () => ({
-  currentExercise: null,
-  exercises: [],
-  date: null,
-  startTime: null
+  muscleGroups: [],
+  catalog: []
 });
 
-export const training = {
+export const exercises = {
   namespaced: true,
   state,
   mutations,

@@ -36,12 +36,12 @@
   export default {
     name: 'Add',
     created () {
-      if(!this.user) {
+      if(!this.isAuth) {
         this.$router.push('/login')
       }
     },
     computed: {
-      ...mapGetters(['user'])
+      ...mapGetters('user', ['isAuth'])
     }
   }
 </script>

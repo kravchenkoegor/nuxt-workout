@@ -4,6 +4,8 @@ import Vuex from 'vuex';
 import {user} from './user';
 import {training} from './training';
 import {history} from './history';
+import {exercises} from './exercises';
+import {toolbar} from './toolbar';
 
 Vue.use(Vuex);
 
@@ -11,7 +13,9 @@ export default () => new Vuex.Store({
   modules: {
     user,
     training,
-    history
+    history,
+    exercises,
+    toolbar
   },
   state: {
     loading: true

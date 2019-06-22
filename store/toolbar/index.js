@@ -3,13 +3,12 @@ import {actions} from './actions';
 import {mutations} from './mutations';
 
 export const state = () => ({
-  currentExercise: null,
-  exercises: [],
-  date: null,
-  startTime: null
+  title: 'Nuxt Workout',
+  icon: 'menu',
+  targetComponent: null
 });
 
-export const training = {
+export const toolbar = {
   namespaced: true,
   state,
   mutations,
