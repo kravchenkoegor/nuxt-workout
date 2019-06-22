@@ -77,22 +77,13 @@
           </v-flex>
         </v-layout>
 
-<!--        <v-flex xs12 my-4 v-if="circuit.length">-->
-<!--          <div v-for="(c, i) in circuit"-->
-<!--               :key="i"-->
-<!--               class="training__circuit"-->
-<!--               :class="{'mb-4': i !== c.length - 1}"-->
-<!--          >-->
-<!--            <circuit :circuit="c" :index="i" />-->
-<!--          </div>-->
-<!--        </v-flex>-->
-
         <v-flex xs12 my-4 v-if="exercises.length">
           <v-list two-line class="training__list">
             <v-list-tile
-              v-for="(exercise, index) in exercises"
-              :key="index"
+              v-for="exercise in exercises"
+              :key="exercise.slug"
               class="mb-4"
+              @click="addExercise(exercise.slug)"
             >
               <v-list-tile-content>
                 <template v-if="!exercise.isSuperSet">
@@ -117,6 +108,15 @@
                     </span>
                     </p>
                   </div>
+
+<!--                  <v-btn-->
+<!--                    color="secondary"-->
+<!--                    class="exercise__add-set"-->
+<!--                    @click="$router.push('/add/set')"-->
+<!--                  >-->
+<!--                    <v-icon left small>fas fa-plus-circle</v-icon>-->
+<!--                    подход-->
+<!--                  </v-btn>-->
                 </template>
 
                 <template v-else>
@@ -149,14 +149,14 @@
                   </div>
                 </template>
 
-                <v-btn
-                  color="secondary"
-                  class="exercise__add-set"
-                  @click="openDialogSet(index)"
-                >
-                  <v-icon left small>fas fa-plus-circle</v-icon>
-                  подход
-                </v-btn>
+<!--                <v-btn-->
+<!--                  color="secondary"-->
+<!--                  class="exercise__add-set"-->
+<!--                  @click="$router.push('/add/set')"-->
+<!--                >-->
+<!--                  <v-icon left small>fas fa-plus-circle</v-icon>-->
+<!--                  подход-->
+<!--                </v-btn>-->
               </v-list-tile-content>
             </v-list-tile>
           </v-list>
@@ -175,7 +175,7 @@
           </v-btn>
 
           <v-btn
-            color="primary"
+            color="#18ba60"
             dark
             absolute
             bottom
@@ -187,44 +187,6 @@
             <v-icon>add</v-icon>
           </v-btn>
         </v-flex>
-
-        <v-dialog v-model="dialog">
-          <v-toolbar color="primary" dark>
-            <v-toolbar-title>Добавить упражнение</v-toolbar-title>
-          </v-toolbar>
-
-          <v-layout align-center justify-center>
-            <v-flex xs12>
-              <v-card>
-                <v-card-text class="pb-0">
-                  <v-checkbox
-                    v-model="isSuperSet"
-                    color="primary"
-                    label="Суперсет"
-                    class="ma-0 pt-0 training__checkbox"
-                    hide-details
-                  ></v-checkbox>
-                </v-card-text>
-
-                <template v-if="!newExercise.title">
-                  <exercise
-                    :is-super-set="isSuperSet"
-                    @closeDialog="dialog = false"
-                    @addNewExercise="addNewExercise"
-                  />
-                </template>
-              </v-card>
-            </v-flex>
-          </v-layout>
-        </v-dialog>
-
-        <set
-          :is-open="dialogSets"
-          :is-super-set="isSuperSet"
-          :exercise-title="getCurrentExercise || ''"
-          @addSet="addNewSet"
-          @closeDialog="dialogSets = false"
-        />
       </v-flex>
     </v-layout>
   </v-container>
@@ -233,31 +195,18 @@
 <script>
   import {mapGetters, mapActions} from 'vuex';
   import DatePicker from '../components/dialogLayouts/DatePicker';
-  import Exercise from '../components/dialogLayouts/Exercise';
-  import Set from '../components/dialogLayouts/Set';
 
   export default {
     name: 'Create',
     components: {
-      DatePicker,
-      Exercise,
-      Set
+      DatePicker
     },
     data: () => ({
       datepicker: false,
       startHH: null,
       startMM: null,
       endHH: null,
-      endMM: null,
-      dialog: false,
-      dialogSets: false,
-      isSuperSet: false,
-      exerciseIndex: 0,
-      newExercise: {
-        title: '',
-        muscleGroup: '',
-        sets: []
-      }
+      endMM: null
     }),
     created() {
       if (!this.isAuth) {
@@ -277,17 +226,6 @@
         'startTime',
         'endTime'
       ]),
-      getCurrentExercise() {
-        const exercise = this.exercises[this.exerciseIndex];
-        if (exercise) {
-          if (!exercise.isSuperSet) {
-            return exercise.title;
-          } else {
-            const {superSet} = exercise;
-            return superSet.map(s => s.title);
-          }
-        }
-      },
       computedDateFormatted() {
         return this.formatDate(this.date);
       }
@@ -297,39 +235,14 @@
         'setDate',
         'setStartTime',
         'setEndTime',
-        'addExercise',
-        'addSet',
+        'setCurrentExercise',
         'saveTraining',
         'clearTraining'
       ]),
       ...mapActions('history', ['fetchTrainings']),
-      openDialogSet(index) {
-        this.dialogSets = !this.dialogSets;
-        this.exerciseIndex = index;
-      },
-      addNewExercise(exercise) {
-        let payload;
-        if (!Array.isArray(exercise)) {
-          payload = {
-            isSuperSet: this.isSuperSet,
-            ...exercise,
-            sets: []
-          }
-        } else {
-          payload = {
-            isSuperSet: this.isSuperSet,
-            superSet: [...exercise]
-          }
-        }
-
-        this.addExercise(payload)
-          .then(() => this.dialog = false)
-          .catch(error => console.error(error));
-      },
-      addNewSet(set) {
-        this.addSet({exerciseIndex: this.exerciseIndex, set})
-          .then(() => this.dialogSets = false)
-          .catch(error => console.error(error));
+      async addExercise(slug) {
+        await this.setCurrentExercise(slug);
+        this.$router.push('/exercise');
       },
       saveNewTraining() {
         const [year, month, day] = this.date.split('-');
@@ -352,14 +265,7 @@
       saveDate(date) {
         this.setDate(date);
         this.datepicker = false;
-      },
-      clear() {
-        this.newExercise = {
-          title: '',
-          muscleGroup: '',
-          sets: []
-        };
-      },
+      }
     }
   }
 </script>

@@ -67,11 +67,12 @@
       ...mapGetters('exercises', ['muscleGroups', 'catalog'])
     },
     methods: {
-      ...mapActions('training', ['addExercise']),
+      ...mapActions('training', ['addExercise', 'setCurrentExercise']),
       getExercisesByMuscleGroup(muscleGroup) {
         return this.catalog.filter(ex => ex.muscleGroup === muscleGroup);
       },
       async addNewExercise(exercise) {
+        await this.setCurrentExercise(exercise.slug);
         await this.addExercise({
           isSuperSet: false,
           ...exercise,
@@ -94,7 +95,13 @@
       &__group {
         border-bottom: 1px solid #ddd;
 
+        &:last-of-type {
+          border-bottom: none;
+        }
+
         &--active {
+          border-bottom: none !important;
+
           &:before {
             display: none;
           }

@@ -2,13 +2,16 @@ export const mutations = {
   addExercise(state, exercise) {
     state.exercises.push(exercise);
   },
-  addSet(state, {exerciseIndex, set}) {
-    const exercise = state.exercises[exerciseIndex];
+  addSet(state, {slug, set}) {
+    const exercise = state.exercises.find(ex => ex.slug === slug);
     if (Array.isArray(set)) {
       set.forEach((s, i) => exercise.superSet[i].sets.push(s));
     } else {
       exercise.sets.push(set);
     }
+  },
+  setCurrentExercise(state, slug) {
+    state.currentExercise = state.exercises.find(ex => ex.slug === slug);
   },
   setDate(state, date) {
     state.date = date;
