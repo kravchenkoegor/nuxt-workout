@@ -19,9 +19,6 @@ export const mutations = {
   setStartTime(state, startTime) {
     state.startTime = startTime;
   },
-  setEndTime(state, endTime) {
-    state.endTime = endTime;
-  },
   clearTraining(state) {
     state.exercises.length = 0;
   }

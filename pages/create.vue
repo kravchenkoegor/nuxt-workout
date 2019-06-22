@@ -2,180 +2,105 @@
   <v-container id="create">
     <v-layout row wrap>
       <v-flex xs12>
-        <v-flex xs12 class="back">
-          <v-btn icon nuxt to="/" exact>
-            <v-icon>fas fa-chevron-left</v-icon>
-          </v-btn>
-        </v-flex>
-
-        <v-flex xs12 class="position-relative">
-          <h2>Тренировка</h2>
-        </v-flex>
-
-        <v-flex xs12 my-4>
+        <v-flex xs12 my-3>
           <date-picker
             :isOpen="datepicker"
             @closeDialog="saveDate"
           />
         </v-flex>
 
-        <v-layout row>
-          <v-flex xs6 pr-2>
-            <p>Начало тренировки</p>
-            <v-layout row>
-              <v-flex xs6 d-flex justify-content-start>
-                <v-text-field
-                  v-model="startHH"
-                  placeholder="чч"
-                  type="number"
-                  class="training__input training__input_time"
-                  mask="##"
-                ></v-text-field>
-
-                <span class="training__divider">:</span>
-              </v-flex>
-
-              <v-flex xs6>
-                <v-text-field
-                  v-model="startMM"
-                  placeholder="мм"
-                  type="number"
-                  class="training__input training__input_time"
-                  mask="##"
-                  @change="setStartTime(`${startHH}:${startMM}`)"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-flex>
-
-          <v-flex xs6 pl-2>
-            <p>Конец тренировки</p>
-            <v-layout row>
-              <v-flex xs6 d-flex justify-content-start>
-                <v-text-field
-                  v-model="endHH"
-                  placeholder="чч"
-                  type="number"
-                  class="training__input training__input_time"
-                  mask="##"
-                ></v-text-field>
-
-                <span class="training__divider">:</span>
-              </v-flex>
-
-              <v-flex xs6>
-                <v-text-field
-                  v-model="endMM"
-                  placeholder="мм"
-                  type="number"
-                  class="training__input training__input_time"
-                  mask="##"
-                  @change="setEndTime(`${endHH}:${endMM}`)"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-flex>
-        </v-layout>
-
-        <v-flex xs12 my-4 v-if="exercises.length">
-          <v-list two-line class="training__list">
-            <v-list-tile
-              v-for="exercise in exercises"
-              :key="exercise.slug"
-              class="mb-4"
-              @click="addExercise(exercise.slug)"
-            >
-              <v-list-tile-content>
-                <template v-if="!exercise.isSuperSet">
-                  <v-list-tile-title>
-                    {{ exercise.title }}
-                  </v-list-tile-title>
-
-                  <v-list-tile-sub-title>
-                    {{ exercise.muscleGroup }}
-                  </v-list-tile-sub-title>
-
-                  <div class="exercise__sets">
-                    <p
-                      v-for="(set, idx) in exercise.sets"
-                      :key="idx"
-                    >
-                    <span class="exercise__repeats">
-                      {{ set.repeats }}
-                    </span>
-                      <span class="exercise__weight">
-                      {{ set.weight }}
-                    </span>
-                    </p>
-                  </div>
-
-<!--                  <v-btn-->
-<!--                    color="secondary"-->
-<!--                    class="exercise__add-set"-->
-<!--                    @click="$router.push('/add/set')"-->
-<!--                  >-->
-<!--                    <v-icon left small>fas fa-plus-circle</v-icon>-->
-<!--                    подход-->
-<!--                  </v-btn>-->
-                </template>
-
-                <template v-else>
-                  <div
-                    v-for="(superset, idx) in exercise.superSet"
-                    :key="idx"
-                    class="superset"
-                  >
+        <template v-if="exercises.length">
+          <v-flex xs12 my-4>
+            <v-list two-line class="training__list">
+              <v-list-tile
+                v-for="exercise in exercises"
+                :key="exercise.slug"
+                class="mb-3"
+                @click="addExercise(exercise.slug)"
+              >
+                <v-list-tile-content>
+                  <template v-if="!exercise.isSuperSet">
                     <v-list-tile-title>
-                      {{ superset.title }}
+                      {{ exercise.title }}
                     </v-list-tile-title>
 
                     <v-list-tile-sub-title>
-                      {{ superset.muscleGroup }}
+                      {{ exercise.muscleGroup }}
                     </v-list-tile-sub-title>
 
-                    <div class="exercise__sets">
+                    <!-- <div class="exercise__sets">
                       <p
-                        v-for="(set, i) in superset.sets"
-                        :key="i"
+                        v-for="(set, idx) in exercise.sets"
+                        :key="idx"
                       >
-                    <span class="exercise__repeats">
-                      {{ set.repeats }}
-                    </span>
+                      <span class="exercise__repeats">
+                        {{ set.repeats }}
+                      </span>
                         <span class="exercise__weight">
-                      {{ set.weight }}
-                    </span>
+                        {{ set.weight }}
+                      </span>
                       </p>
-                    </div>
-                  </div>
-                </template>
+                    </div> -->
+                  </template>
 
-<!--                <v-btn-->
-<!--                  color="secondary"-->
-<!--                  class="exercise__add-set"-->
-<!--                  @click="$router.push('/add/set')"-->
-<!--                >-->
-<!--                  <v-icon left small>fas fa-plus-circle</v-icon>-->
-<!--                  подход-->
-<!--                </v-btn>-->
-              </v-list-tile-content>
-            </v-list-tile>
-          </v-list>
-        </v-flex>
+                  <!-- <template v-else>
+                    <div
+                      v-for="(superset, idx) in exercise.superSet"
+                      :key="idx"
+                      class="superset"
+                    >
+                      <v-list-tile-title>
+                        {{ superset.title }}
+                      </v-list-tile-title>
+
+                      <v-list-tile-sub-title>
+                        {{ superset.muscleGroup }}
+                      </v-list-tile-sub-title>
+
+                      <div class="exercise__sets">
+                        <p
+                          v-for="(set, i) in superset.sets"
+                          :key="i"
+                        >
+                      <span class="exercise__repeats">
+                        {{ set.repeats }}
+                      </span>
+                          <span class="exercise__weight">
+                        {{ set.weight }}
+                      </span>
+                        </p>
+                      </div>
+                    </div>
+                  </template> -->
+                </v-list-tile-content>
+              </v-list-tile>
+            </v-list>
+          </v-flex>
+        </template>
+
+        <template v-else>
+          <v-flex xs12 my-4>
+            <h4>Упражнений пока нет</h4>
+          </v-flex>
+        </template>
 
         <v-flex xs12 mt-4>
           <v-btn
             color="accent"
             dark
+            absolute
+            bottom
+            left
             block
             @click="saveNewTraining"
-            style="max-width: 220px; margin: 0 auto;"
+            style="max-width: 180px; margin: 0 auto 10px;"
           >
-            <v-icon left small>fas fa-check-circle</v-icon>
+            <v-icon left>check_circle</v-icon>
             Сохранить
           </v-btn>
 
           <v-btn
-            color="#18ba60"
+            color="primary"
             dark
             absolute
             bottom
@@ -203,29 +128,24 @@
     },
     data: () => ({
       datepicker: false,
-      startHH: null,
-      startMM: null,
-      endHH: null,
-      endMM: null
+      startTime: null,
+      endTime: null
     }),
     created() {
       if (!this.isAuth) {
         this.$router.push('/login');
       }
+
+      this.setTitle('Тренировка');
+      this.setTargetComponent('index');
     },
     mounted() {
-      this.startHH = this.$moment().format('HH');
-      this.startMM = this.$moment().format('mm');
-      this.setStartTime(`${this.startHH}:${this.startMM}`);
+      this.startTime = this.$moment().format('HH:mm');
+      this.setStartTime(this.startTime);
     },
     computed: {
       ...mapGetters('user', ['isAuth', 'userId']),
-      ...mapGetters('training', [
-        'exercises',
-        'date',
-        'startTime',
-        'endTime'
-      ]),
+      ...mapGetters('training', ['exercises','date']),
       computedDateFormatted() {
         return this.formatDate(this.date);
       }
@@ -234,18 +154,19 @@
       ...mapActions('training', [
         'setDate',
         'setStartTime',
-        'setEndTime',
         'setCurrentExercise',
         'saveTraining',
         'clearTraining'
       ]),
       ...mapActions('history', ['fetchTrainings']),
+      ...mapActions('toolbar', ['setTitle', 'setTargetComponent']),
       async addExercise(slug) {
         await this.setCurrentExercise(slug);
         this.$router.push('/exercise');
       },
       saveNewTraining() {
         const [year, month, day] = this.date.split('-');
+        const endTime = this.$moment().format('HH:mm');
 
         this.saveTraining({
           day,
@@ -253,7 +174,7 @@
           year,
           date: this.date,
           startTime: this.startTime,
-          endTime: this.endTime,
+          endTime,
           exercises: this.exercises,
           createdBy: this.userId
         })
@@ -304,10 +225,11 @@
         padding: 0;
 
         .v-list__tile {
+          box-shadow: 0px 3px 3px -2px rgba(0,0,0,0.2), 0px 3px 4px 0px rgba(0,0,0,0.14), 0px 1px 8px 0px rgba(0,0,0,0.12);
           padding: 1.5rem;
           text-align: center;
           height: auto;
-          background-color: #eee;
+          // background-color: #eee;
           border-radius: 0.5rem;
           margin-top: 1rem;
 

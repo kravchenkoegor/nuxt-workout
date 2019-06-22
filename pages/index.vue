@@ -48,12 +48,19 @@
           this.$router.push('/login');
         }
       }
+
+      if (this.targetComponent) {
+        this.setTitle('Nuxt Workout');
+        this.setTargetComponent(null);
+      }
     },
     computed: {
-      ...mapGetters('user', ['isAuth'])
+      ...mapGetters('user', ['isAuth']),
+      ...mapGetters('toolbar', ['title', 'targetComponent'])
     },
     methods: {
-      ...mapActions('user', ['authUserById'])
+      ...mapActions('user', ['authUserById']),
+      ...mapActions('toolbar', ['setTitle', 'setTargetComponent'])
     }
   }
 </script>

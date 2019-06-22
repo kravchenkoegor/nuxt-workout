@@ -2,16 +2,6 @@
   <v-container fill-height>
     <v-layout row wrap>
       <v-flex xs12>
-        <v-flex xs12 class="back">
-          <v-btn icon nuxt to="/" exact>
-            <v-icon>fas fa-chevron-left</v-icon>
-          </v-btn>
-        </v-flex>
-
-        <v-flex xs12 mb-4 class="position-relative">
-          <h2>Журнал тренировок</h2>
-        </v-flex>
-
         <template v-if="loading">
           <v-flex
             xs12
@@ -75,6 +65,10 @@
     data: () => ({
       dates: []
     }),
+    created() {
+      this.setTitle('Журнал');
+      this.setTargetComponent('index');
+    },
     mounted() {
       if (!this.trainings.length) {
         this.fetchTrainings(this.userId)
@@ -104,6 +98,7 @@
     },
     methods: {
       ...mapActions('history', ['fetchTrainings']),
+      ...mapActions('toolbar', ['setTitle', 'setTargetComponent']),
       ...mapActions(['setLoading']),
       getTrainingMonths() {
         for (let i = 0; i < this.trainings.length; i++) {

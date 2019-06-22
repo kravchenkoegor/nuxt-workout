@@ -18,9 +18,6 @@ export const actions = {
   setStartTime({commit}, startTime) {
     commit('setStartTime', startTime);
   },
-  setEndTime({commit}, endTime) {
-    commit('setEndTime', endTime);
-  },
   clearTraining({commit}) {
     commit('clearTraining');
   }

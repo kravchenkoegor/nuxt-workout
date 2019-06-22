@@ -1,39 +1,23 @@
 <template>
   <v-container id="currentExercise">
-    <v-layout
-      v-if="!currentExercise"
-      row
-    >
-      <v-flex xs12>
+    <v-layout v-if="!currentExercise" row>
+      <v-flex xs12 my-2>
         Loading...
       </v-flex>
     </v-layout>
 
-    <v-layout
-      v-else
-      row
-      wrap
-    >
-      <v-flex xs12 class="back">
-        <v-btn
-          icon
-          @click="$router.push('/create')"
-        >
-          <v-icon>fas fa-chevron-left</v-icon>
-        </v-btn>
+    <v-layout v-else row wrap>
+      <v-flex xs12>
+        <h4>{{ currentExercise.title }}</h4>
       </v-flex>
 
-      <v-flex xs12 class="position-relative">
-        <h2>{{ currentExercise.title }}</h2>
-      </v-flex>
-
-      <v-flex xs12 my-4>
+      <v-flex xs12 mt-3>
         <template v-if="!currentExercise.sets.length">
-          <p>Ебашь скотина</p>
+          <p>Подходов пока нет</p>
         </template>
 
         <template v-else>
-          <div class="table">
+          <div class="table mt-3">
             <div class="table__row table__row_headers">
               <div class="table__col">#</div>
               <div class="table__col">Вес, кг</div>
@@ -65,7 +49,7 @@
       </v-flex>
 
       <v-btn
-        color="#18ba60"
+        color="primary"
         dark
         absolute
         bottom
@@ -97,11 +81,16 @@
         { text: ' ', value: '' }
       ]
     }),
+    created() {
+      this.setTitle('Упражнение');
+      this.setTargetComponent('create');
+    },
     computed: {
       ...mapGetters('training', ['currentExercise'])
     },
     methods: {
       ...mapActions('training', ['addExercise']),
+      ...mapActions('toolbar', ['setTitle', 'setTargetComponent']),
       async addNewExercise(exercise) {
         let payload;
         if (!Array.isArray(exercise)) {
@@ -128,6 +117,7 @@
   #currentExercise {
     .table {
       border: 1px solid #ddd;
+      border-radius: .25rem;
 
       &__row {
         border-bottom: 1px solid #ddd;
@@ -135,6 +125,7 @@
 
         &:last-of-type {
           border-bottom: none;
+          border-radius: 0 0 0 .25rem;
         }
 
         &_headers {

@@ -1,5 +1,5 @@
 <template>
-  <v-app style="background: #FBFEF9;">
+  <v-app style="background: #FAFAFA;">
     <v-navigation-drawer v-model="drawer" fixed app>
       <v-toolbar color="primary" dark>
         <template v-if="isAuth">
@@ -49,13 +49,11 @@
     </v-navigation-drawer>
 
     <v-toolbar color="primary" dark fixed app>
-      <v-toolbar-side-icon
-        @click.stop="drawer = !drawer"
-      />
-      <v-toolbar-title
-        @click="$router.push('/')"
-      >
-        Nuxt Workout
+      <v-btn icon @click="handleClick">
+        <v-icon>{{ toolbarIcon }}</v-icon>
+      </v-btn>
+      <v-toolbar-title>
+        {{ title }}
       </v-toolbar-title>
     </v-toolbar>
 
@@ -75,6 +73,7 @@
     }),
     computed: {
       ...mapGetters('user', ['isAuth', 'username']),
+      ...mapGetters('toolbar', ['title', 'icon', 'targetComponent']),
       menuLinks() {
         const links = [];
 
@@ -92,10 +91,20 @@
         }
 
         return links;
+      },
+      toolbarIcon() {
+        return this.targetComponent ? 'arrow_back' : 'menu';
       }
     },
     methods: {
       ...mapActions('user', ['logoutUser']),
+      handleClick() {
+        if (this.targetComponent) {
+          this.$router.push({name: this.targetComponent});
+        } else {
+          this.drawer = !this.drawer;
+        }
+      },
       logout() {
         this.drawer = false;
         this.logoutUser()

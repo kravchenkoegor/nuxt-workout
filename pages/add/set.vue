@@ -2,27 +2,21 @@
   <div id="addSet">
     <v-container>
       <v-layout row>
-        <v-flex xs12 class="back">
-          <v-btn icon nuxt to="/create" exact>
-            <v-icon>fas fa-chevron-left</v-icon>
-          </v-btn>
-        </v-flex>
-
-        <v-flex xs12 class="position-relative">
-          <h2>Добавить подход</h2>
+        <v-flex xs12>
+          <h4>{{ currentExercise.title }}</h4>
         </v-flex>
       </v-layout>
 
-      <v-layout row mt-4>
+      <v-layout row mt-3>
         <v-flex xs12>
           <v-text-field
             v-model="weight"
             label="Вес"
             type="number"
             hide-details
-            prepend-inner-icon="fas fa-minus"
-            append-icon="fas fa-plus"
+            prepend-inner-icon="remove"
             @click:prepend-inner="changeWeight('remove')"
+            append-icon="add"
             @click:append="changeWeight('add')"
           ></v-text-field>
         </v-flex>
@@ -35,20 +29,19 @@
             label="Повторения"
             type="number"
             hide-details
-            prepend-inner-icon="fas fa-minus"
-            append-icon="fas fa-plus"
+            prepend-inner-icon="remove"
             @click:prepend-inner="changeRepeats('remove')"
+            append-icon="add"
             @click:append="changeRepeats('add')"
           ></v-text-field>
         </v-flex>
       </v-layout>
 
       <v-layout row mt-3>
-        <v-flex xs12>
+        <v-flex xs12 class="mt-3">
           <h4>Усилие</h4>
           <div class="stress">
             <div
-              v-model="stressValue"
               v-for="item in stress"
               :key="item.value"
               class="stress__item"
@@ -64,7 +57,7 @@
       <v-layout row>
         <v-flex xs12>
           <v-btn
-            color="#18ba60"
+            color="primary"
             dark
             absolute
             bottom
@@ -89,43 +82,38 @@
       weight: null,
       repeats: null,
       stress: [
-        {
-          label:'Размин.',
-          value: 0
-        },
-        {
-          label: 'Низкое',
-          value: 25
-        },
-        {
-          label: 'Среднее',
-          value: 50
-        },
-        {
-          label: 'Высокое',
-          value: 75
-        },
-        {
-          label: 'Макс.',
-          value: 100
-        }
+        {label:'Размин.', value: 0},
+        {label: 'Низкое', value: 25},
+        {label: 'Среднее', value: 50},
+        {label: 'Высокое', value: 75},
+        {label: 'Макс.', value: 100}
       ],
       stressValue: null
     }),
+    created() {
+      this.setTitle('Подход');
+      this.setTargetComponent('create');
+    },
     computed: {
       ...mapGetters('training', ['currentExercise'])
     },
     methods: {
       ...mapActions('training', ['addSet']),
+      ...mapActions('toolbar', ['setTitle', 'setTargetComponent']),
       changeWeight(operator) {
         if (!this.weight) {
           this.weight = 0;
         }
 
         this.weight = Number(this.weight);
-        operator === 'add'
-          ? this.weight += 2.5
-          : this.weight -= 2.5;
+
+        if (this.weight === 0 && operator === 'remove') {
+          return;
+        } else if (operator === 'remove') {
+          this.weight -= 2.5;
+        } else {
+          this.weight += 2.5;
+        }
       },
       changeRepeats(operator) {
         if (!this.repeats) {
@@ -133,9 +121,14 @@
         }
 
         this.repeats = Number(this.repeats);
-        operator === 'add'
-          ? this.repeats += 1
-          : this.repeats -= 1;
+
+        if (this.repeats === 0 && operator === 'remove') {
+          return;
+        } else if (operator === 'remove') {
+          this.repeats -= 1;
+        } else {
+          this.repeats += 1;
+        }
       },
       setStress(value) {
         this.stressValue = value;
